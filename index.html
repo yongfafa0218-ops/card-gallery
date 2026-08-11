@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>맘풀고 카드 디자인 갤러리</title>
+    <style>
+        body { font-family: 'Pretendard', -apple-system, sans-serif; background-color: #f8f9fa; margin: 0; padding: 20px; text-align: center; }
+        h1 { color: #333; margin-bottom: 30px; }
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
+        .img-card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); cursor: pointer; transition: 0.3s; }
+        .img-card:hover { transform: translateY(-10px); }
+        .img-card img { width: 100%; height: 300px; object-fit: cover; display: block; }
+        .img-info { padding: 15px; font-weight: bold; color: #4A90E2; }
+    </style>
+</head>
+<body>
+
+    <h1>💌 카드 디자인을 선택하세요</h1>
+    
+    <div class="gallery-grid">
+        <!-- 이미지 아이템 예시 (주소는 실제 이미지 주소로 변경 가능) -->
+        <div class="img-card" onclick="goToMaker('https://images.unsplash.com/photo-1519741497674-611481863552' )">
+            <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=500" alt="디자인 1">
+            <div class="img-info">우아한 웨딩</div>
+        </div>
+
+        <div class="img-card" onclick="goToMaker('https://images.unsplash.com/photo-1530103862676-fa8c9d34a800' )">
+            <img src="https://images.unsplash.com/photo-1530103862676-fa8c9d34a800?w=500" alt="디자인 2">
+            <div class="img-info">즐거운 생일</div>
+        </div>
+        
+        <!-- 추가하고 싶은 만큼 위 div 구조를 복사해서 넣으세요 -->
+    </div>
+
+    <script>
+        // ⚠️ 중요: 본인의 워드프레스 카드 만들기 페이지 주소로 꼭 수정하세요!
+        const WP_MAKER_URL = "https://사용자님의워드프레스주소.com/make-card/";
+
+        function goToMaker(imgUrl ) {
+            // 주소 뒤에 ?img_url=이미지주소 를 붙여서 이동합니다.
+            const finalUrl = WP_MAKER_URL + "?img_url=" + encodeURIComponent(imgUrl);
+            window.location.href = finalUrl;
+        }
+    </script>
+</body>
+</html>
