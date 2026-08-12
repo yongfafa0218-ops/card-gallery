@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>맘풀고 Pro 관리자 패널</title>
+    <title>맘풀고 Pro 관리자 패널 v2.0</title>
     <style>
         :root {
             --primary: #4A90E2;
@@ -15,6 +15,7 @@
             --text-muted: #64748b;
             --white: #ffffff;
             --danger: #ef4444;
+            --success: #10b981;
         }
 
         * { box-sizing: border-box; transition: all 0.2s ease-in-out; }
@@ -36,19 +37,16 @@
 
         /* Main Content */
         .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
-        
         .header { height: 70px; background: var(--white); border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; }
         .path-info { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 18px; }
-        
         .top-actions { display: flex; gap: 12px; align-items: center; }
         .btn-admin-toggle { background: #f1f5f9; color: var(--text-main); border: 1px solid #e2e8f0; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; }
         .btn-admin-toggle.active { background: var(--primary); color: white; border-color: var(--primary); }
-
         .content { flex: 1; overflow-y: auto; padding: 30px; }
 
-        /* Admin Dashboard Overlay */
+        /* Admin Dashboard */
         #admin-panel { display: none; background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 25px; margin-bottom: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .admin-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; }
         .admin-card { background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; }
         .admin-card h4 { margin: 0 0 15px 0; font-size: 14px; color: var(--text-muted); }
         
@@ -56,28 +54,29 @@
         .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 25px; }
         .item-card { background: var(--white); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); cursor: pointer; position: relative; border: 1px solid #f1f5f9; }
         .item-card:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-        
         .media-wrap { width: 100%; height: 320px; background: #f1f5f9; position: relative; overflow: hidden; }
         .media-wrap img, .media-wrap video { width: 100%; height: 100%; object-fit: cover; }
-        
         .badge { position: absolute; top: 12px; right: 12px; background: rgba(15, 23, 42, 0.7); color: white; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; backdrop-filter: blur(4px); }
         .item-meta { padding: 15px; text-align: center; }
         .item-name { font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         
-        .action-btns { position: absolute; top: 12px; left: 12px; display: none; gap: 5px; }
+        /* Action Buttons on Card */
+        .action-btns { position: absolute; top: 12px; left: 12px; display: none; gap: 6px; }
         .item-card:hover .action-btns { display: flex; }
-        .btn-icon { background: var(--danger); color: white; border: none; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .btn-icon { color: white; border: none; width: 34px; height: 34px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+        .btn-del { background: var(--danger); }
+        .btn-move { background: var(--success); }
 
         /* Form Elements */
         .input-group { display: flex; gap: 8px; }
-        input { padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; outline: none; font-size: 14px; width: 100%; }
-        input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1); }
-        .btn-solid { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; white-space: nowrap; }
-        .btn-outline { background: transparent; border: 1.5px solid var(--primary); color: var(--primary); padding: 10px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        input, select { padding: 12px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; outline: none; font-size: 14px; width: 100%; font-family: inherit; }
+        input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1); }
+        .btn-solid { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; white-space: nowrap; }
+        .btn-outline { background: transparent; border: 1.5px solid var(--primary); color: var(--primary); padding: 12px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; }
 
         /* Modal */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
-        .modal-box { background: white; padding: 30px; border-radius: 20px; width: 400px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
+        .modal-box { background: white; padding: 30px; border-radius: 20px; width: 420px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
 
         /* Loader */
         .spinner { border: 3px solid #e2e8f0; border-top: 3px solid var(--primary); border-radius: 50%; width: 20px; height: 20px; animation: spin 0.8s linear infinite; }
@@ -95,9 +94,7 @@
 
     <!-- Sidebar -->
     <aside class="sidebar">
-        <div class="sidebar-header">
-            <span>Mampulgo</span> Pro
-        </div>
+        <div class="sidebar-header"><span>Mampulgo</span> Pro</div>
         <nav class="category-nav">
             <div class="nav-label">Categories</div>
             <div id="cat-list">
@@ -112,9 +109,7 @@
     <!-- Main -->
     <main class="main">
         <header class="header">
-            <div class="path-info">
-                <span id="path-text">전체보기</span>
-            </div>
+            <div class="path-info"><span id="path-text">전체보기</span></div>
             <div class="top-actions">
                 <a href="https://mampulgo.com/make-card/" style="text-decoration:none; color:var(--text-muted); font-size:13px; margin-right:15px;">🏠 카드 홈</a>
                 <div id="global-spinner" class="spinner" style="display:none;"></div>
@@ -127,16 +122,16 @@
             <section id="admin-panel">
                 <div class="admin-grid">
                     <div class="admin-card">
-                        <h4>GitHub API 인증</h4>
+                        <h4>GitHub 인증</h4>
                         <div class="input-group">
                             <input type="password" id="token-input" placeholder="ghp_... 토큰 입력">
-                            <button class="btn-solid" onclick="saveAuth()">인증 저장</button>
+                            <button class="btn-solid" onclick="saveAuth()">저장</button>
                         </div>
                     </div>
                     <div class="admin-card">
-                        <h4>미디어 업로드</h4>
+                        <h4>미디어 관리</h4>
                         <div class="input-group">
-                            <label for="file-input" class="btn-outline" style="flex:1; text-align:center;">📁 파일 선택</label>
+                            <label for="file-input" class="btn-outline" style="flex:1; text-align:center;">📁 파일 선택 업로드</label>
                             <input type="file" id="file-input" style="display:none;" onchange="handleUpload(this)">
                             <button class="btn-danger" id="del-cat-btn" style="display:none;" onclick="handleDelCat()">카테고리 삭제</button>
                         </div>
@@ -146,9 +141,7 @@
             </section>
 
             <!-- Gallery -->
-            <div class="gallery" id="gallery-grid">
-                <!-- Media cards -->
-            </div>
+            <div class="gallery" id="gallery-grid"></div>
         </div>
     </main>
 
@@ -156,7 +149,6 @@
     <div class="modal-overlay" id="modal-cat">
         <div class="modal-box">
             <h3 style="margin-top:0;">새 카테고리 생성</h3>
-            <p style="font-size:13px; color:var(--text-muted);">영문 이름을 권장합니다 (예: wedding, birthday)</p>
             <input type="text" id="new-cat-input" placeholder="카테고리 이름 입력" style="margin-bottom:20px;">
             <div style="display:flex; gap:10px;">
                 <button class="btn-solid" style="flex:1;" onclick="handleCreateCat()">생성하기</button>
@@ -165,47 +157,43 @@
         </div>
     </div>
 
+    <!-- Modal: Move/Rename File -->
+    <div class="modal-overlay" id="modal-move">
+        <div class="modal-box">
+            <h3 style="margin-top:0;">파일 이동 및 이름 변경</h3>
+            <div style="text-align:left; margin-bottom:15px;">
+                <label style="font-size:12px; color:var(--text-muted);">파일명 변경 (확장자 포함)</label>
+                <input type="text" id="move-name-input" style="margin-top:5px;">
+            </div>
+            <div style="text-align:left; margin-bottom:20px;">
+                <label style="font-size:12px; color:var(--text-muted);">이동할 카테고리 선택</label>
+                <select id="move-cat-select" style="margin-top:5px;">
+                    <option value="">(최상위 폴더)</option>
+                </select>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <button class="btn-solid" style="flex:1;" id="btn-confirm-move">변경사항 적용</button>
+                <button class="btn-outline" style="flex:1;" onclick="toggleModal('modal-move', false)">취소</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        const CONFIG = {
-            user: "yongfafa0218-ops",
-            repo: "card-gallery",
-            wp: "https://mampulgo.com/make-card/"
-        };
-        
-        let isAdmin = false;
-        let currentCat = '';
-        let allData = [];
+        const CONFIG = { user: "yongfafa0218-ops", repo: "card-gallery", wp: "https://mampulgo.com/make-card/" };
+        let isAdmin = false, currentCat = '', allData = [], categories = [];
 
         window.onload = () => {
-            // Check if token exists
-            if (localStorage.getItem('gh_token')) {
-                document.getElementById('token-input').value = localStorage.getItem('gh_token');
-            }
-            
-            // Initial Load
+            if (localStorage.getItem('gh_token')) document.getElementById('token-input').value = localStorage.getItem('gh_token');
             refreshUI();
         };
 
-        // --- Core UI Logic ---
-
         function toggleAdminMode() {
             isAdmin = !isAdmin;
-            const btn = document.getElementById('admin-btn');
-            const panel = document.getElementById('admin-panel');
-            const catAction = document.getElementById('admin-cat-action');
-            
-            if (isAdmin) {
-                btn.innerText = "🔓 관리자 모드 중";
-                btn.classList.add('active');
-                panel.style.display = 'block';
-                catAction.style.display = 'block';
-            } else {
-                btn.innerText = "🔒 관리자 로그인";
-                btn.classList.remove('active');
-                panel.style.display = 'none';
-                catAction.style.display = 'none';
-            }
-            renderGallery(); // Re-render to show/hide delete buttons
+            document.getElementById('admin-btn').innerText = isAdmin ? "🔓 관리자 모드 중" : "🔒 관리자 로그인";
+            document.getElementById('admin-btn').classList.toggle('active', isAdmin);
+            document.getElementById('admin-panel').style.display = isAdmin ? 'block' : 'none';
+            document.getElementById('admin-cat-action').style.display = isAdmin ? 'block' : 'none';
+            renderGallery();
         }
 
         async function refreshUI() {
@@ -217,46 +205,40 @@
             const token = localStorage.getItem('gh_token');
             const headers = { 'Accept': 'application/vnd.github.v3+json' };
             if (token) headers['Authorization'] = `token ${token}`;
-            
             document.getElementById('global-spinner').style.display = 'block';
             try {
                 const options = { method, headers };
                 if (body) options.body = JSON.stringify(body);
-                
                 const res = await fetch(`https://api.github.com/repos/${CONFIG.user}/${CONFIG.repo}/contents/${path}`, options);
-                if (!res.ok) {
-                    const err = await res.json();
-                    throw new Error(err.message);
-                }
+                if (!res.ok) { const err = await res.json(); throw new Error(err.message); }
                 return await res.json();
-            } finally {
-                document.getElementById('global-spinner').style.display = 'none';
-            }
+            } finally { document.getElementById('global-spinner').style.display = 'none'; }
         }
 
         async function loadCategories() {
             try {
                 const data = await ghApi('');
-                const cats = data.filter(i => i.type === 'dir').map(i => i.name);
+                categories = data.filter(i => i.type === 'dir').map(i => i.name);
                 const list = document.getElementById('cat-list');
                 list.innerHTML = `<div class="cat-item ${currentCat === '' ? 'active' : ''}" onclick="changeCat('')">📂 <span>전체보기</span></div>`;
-                cats.forEach(c => {
+                categories.forEach(c => {
                     list.innerHTML += `<div class="cat-item ${currentCat === c ? 'active' : ''}" onclick="changeCat('${c}')">📁 <span>${c}</span></div>`;
                 });
+                // Update move modal select
+                const select = document.getElementById('move-cat-select');
+                select.innerHTML = '<option value="">(최상위 폴더)</option>';
+                categories.forEach(c => { select.innerHTML += `<option value="${c}">${c}</option>`; });
             } catch (e) { console.error(e); }
         }
 
         async function loadMedia() {
             const grid = document.getElementById('gallery-grid');
-            grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; padding:50px; color:#94a3b8;">미디어를 불러오는 중...</p>';
-            
+            grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; padding:50px; color:#94a3b8;">로딩 중...</p>';
             try {
                 if (currentCat === '') {
                     const root = await ghApi('');
                     let files = root.filter(i => i.type === 'file');
-                    // Also get files from first-level subdirs for "All" view
-                    const dirs = root.filter(i => i.type === 'dir');
-                    for (const d of dirs) {
+                    for (const d of root.filter(i => i.type === 'dir')) {
                         const sub = await ghApi(d.path);
                         files = [...files, ...sub.filter(i => i.type === 'file')];
                     }
@@ -266,52 +248,33 @@
                     allData = data.filter(i => i.type === 'file');
                 }
                 renderGallery();
-            } catch (e) {
-                grid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; padding:50px; color:red;">불러오기 실패: ${e.message}</p>`;
-            }
+            } catch (e) { grid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; padding:50px; color:red;">에러: ${e.message}</p>`; }
         }
 
         function renderGallery() {
             const grid = document.getElementById('gallery-grid');
             grid.innerHTML = '';
-            
             const valid = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'mp4', 'mov'];
             const filtered = allData.filter(f => valid.includes(f.name.split('.').pop().toLowerCase()));
-
-            if (filtered.length === 0) {
-                grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; padding:50px; color:#94a3b8;">이 폴더에 미디어가 없습니다.</p>';
-                return;
-            }
+            if (filtered.length === 0) { grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; padding:50px; color:#94a3b8;">미디어가 없습니다.</p>'; return; }
 
             filtered.forEach(file => {
-                const ext = file.name.split('.').pop().toLowerCase();
-                const isVid = ext === 'mp4' || ext === 'mov';
-                
-                // CRITICAL FIX: Use download_url for instant preview, and relative path for production
-                const previewUrl = file.download_url; 
-                const prodUrl = `${window.location.origin}/${file.path}`;
-
+                const isVid = ['mp4', 'mov'].includes(file.name.split('.').pop().toLowerCase());
                 const card = document.createElement('div');
                 card.className = 'item-card';
                 card.innerHTML = `
-                    ${isAdmin ? `<div class="action-btns"><button class="btn-icon" onclick="handleDelFile('${file.path}', '${file.sha}', event)">🗑️</button></div>` : ''}
+                    ${isAdmin ? `<div class="action-btns">
+                        <button class="btn-icon btn-del" onclick="handleDelFile('${file.path}', '${file.sha}', event)">🗑️</button>
+                        <button class="btn-icon btn-move" onclick="openMoveModal('${file.path}', '${file.sha}', '${file.name}', event)">🚚</button>
+                    </div>` : ''}
                     <div class="media-wrap">
-                        ${isVid ? `<video src="${previewUrl}" muted loop playsinline></video>` : `<img src="${previewUrl}" onerror="this.src='https://placehold.co/400x600?text=Error'">`}
+                        ${isVid ? `<video src="${file.download_url}" muted loop playsinline></video>` : `<img src="${file.download_url}">`}
                         <span class="badge">${isVid ? 'VIDEO' : 'IMAGE'}</span>
                     </div>
-                    <div class="item-meta">
-                        <div class="item-name">${file.name}</div>
-                    </div>
+                    <div class="item-meta"><div class="item-name">${file.name}</div></div>
                 `;
-                
-                if(isVid) {
-                    card.onmouseenter = () => card.querySelector('video').play();
-                    card.onmouseleave = () => card.querySelector('video').pause();
-                }
-                
-                card.onclick = () => {
-                    window.location.href = `${CONFIG.wp}?img_url=${encodeURIComponent(prodUrl)}`;
-                };
+                if(isVid) { card.onmouseenter = () => card.querySelector('video').play(); card.onmouseleave = () => card.querySelector('video').pause(); }
+                card.onclick = () => { window.location.href = `${CONFIG.wp}?img_url=${encodeURIComponent(window.location.origin + '/' + file.path)}`; };
                 grid.appendChild(card);
             });
         }
@@ -324,71 +287,78 @@
         }
 
         // --- Admin Actions ---
-
         function saveAuth() {
             const val = document.getElementById('token-input').value.trim();
-            if (val.startsWith('ghp_')) {
-                localStorage.setItem('gh_token', val);
-                alert("인증 정보가 저장되었습니다.");
-                refreshUI();
-            } else { alert("올바른 토큰을 입력하세요."); }
+            if (val.startsWith('ghp_')) { localStorage.setItem('gh_token', val); alert("저장되었습니다."); refreshUI(); }
+            else alert("올바른 토큰을 입력하세요.");
         }
 
         async function handleUpload(input) {
-            const file = input.files[0];
-            if (!file) return;
-            const msg = document.getElementById('upload-msg');
-            msg.innerText = "🚀 업로드 중...";
-            
+            const file = input.files[0]; if (!file) return;
+            const msg = document.getElementById('upload-msg'); msg.innerText = "🚀 업로드 중...";
             try {
                 const reader = new FileReader();
                 reader.onload = async () => {
                     const content = reader.result.split(',')[1];
-                    const name = `${Date.now()}_${file.name}`;
-                    const path = currentCat ? `${currentCat}/${name}` : name;
-                    
-                    await ghApi(path, 'PUT', { message: `Upload ${name}`, content });
-                    msg.innerText = "✅ 업로드 완료! (배포 대기중)";
-                    input.value = "";
-                    setTimeout(loadMedia, 2000);
+                    const path = currentCat ? `${currentCat}/${Date.now()}_${file.name}` : `${Date.now()}_${file.name}`;
+                    await ghApi(path, 'PUT', { message: `Upload ${file.name}`, content });
+                    msg.innerText = "✅ 완료!"; input.value = ""; setTimeout(loadMedia, 2000);
                 };
                 reader.readAsDataURL(file);
             } catch (e) { alert(e.message); msg.innerText = ""; }
         }
 
         async function handleCreateCat() {
-            const name = document.getElementById('new-cat-input').value.trim();
-            if (!name) return;
-            try {
-                await ghApi(`${name}/.keep`, 'PUT', { message: `Create dir ${name}`, content: btoa('') });
-                toggleModal('modal-cat', false);
-                changeCat(name);
-            } catch (e) { alert(e.message); }
+            const name = document.getElementById('new-cat-input').value.trim(); if (!name) return;
+            try { await ghApi(`${name}/.keep`, 'PUT', { message: `Create dir ${name}`, content: btoa('') }); toggleModal('modal-cat', false); changeCat(name); }
+            catch (e) { alert(e.message); }
         }
 
         async function handleDelCat() {
-            if (!currentCat || !confirm(`'${currentCat}' 폴더와 내부 파일을 모두 삭제하시겠습니까?`)) return;
+            if (!currentCat || !confirm(`'${currentCat}' 폴더를 삭제하시겠습니까?`)) return;
             try {
                 const files = await ghApi(currentCat);
-                for (const f of files) {
-                    await ghApi(f.path, 'DELETE', { message: `Cleanup for cat delete`, sha: f.sha });
-                }
+                for (const f of files) await ghApi(f.path, 'DELETE', { message: `Cleanup`, sha: f.sha });
                 changeCat('');
             } catch (e) { alert(e.message); }
         }
 
-        async function handleDelFile(path, sha, e) {
+        async function handleDelFile(path, sha, e) { e.stopPropagation(); if (confirm("삭제하시겠습니까?")) { await ghApi(path, 'DELETE', { message: `Delete`, sha }); loadMedia(); } }
+
+        // --- Move & Rename Logic ---
+        function openMoveModal(path, sha, name, e) {
             e.stopPropagation();
-            if (!confirm("이 파일을 삭제하시겠습니까?")) return;
-            try {
-                await ghApi(path, 'DELETE', { message: `Delete file`, sha });
-                loadMedia();
-            } catch (e) { alert(e.message); }
+            document.getElementById('move-name-input').value = name;
+            // Extract current folder from path
+            const parts = path.split('/');
+            const currentFileDir = parts.length > 1 ? parts[0] : "";
+            document.getElementById('move-cat-select').value = currentFileDir;
+            
+            toggleModal('modal-move', true);
+            
+            document.getElementById('btn-confirm-move').onclick = async () => {
+                const newName = document.getElementById('move-name-input').value.trim();
+                const newCat = document.getElementById('move-cat-select').value;
+                const newPath = newCat ? `${newCat}/${newName}` : newName;
+                
+                if (newPath === path) { alert("변경사항이 없습니다."); return; }
+                
+                try {
+                    // 1. Get file content
+                    const fileData = await ghApi(path);
+                    // 2. Create new file
+                    await ghApi(newPath, 'PUT', { message: `Move/Rename to ${newPath}`, content: fileData.content });
+                    // 3. Delete old file
+                    await ghApi(path, 'DELETE', { message: `Delete old file after move`, sha: sha });
+                    
+                    alert("성공적으로 변경되었습니다!");
+                    toggleModal('modal-move', false);
+                    loadMedia();
+                } catch (err) { alert("실패: " + err.message); }
+            };
         }
 
-        function toggleModal(id, show) {
-            document.getElementById(id).style.display = show ? 'flex' : 'none';
-        }
+        function toggleModal(id, show) { document.getElementById(id).style.display = show ? 'flex' : 'none'; }
     </script>
 </body>
 </html>
