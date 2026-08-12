@@ -3,166 +3,328 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>맘풀고 카드 템플릿 관리자</title>
+    <title>맘풀고 관리자 패널 (cPanel)</title>
     <style>
-        body { font-family: 'Pretendard', -apple-system, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 1200px; margin: 0 auto; }
-        header { text-align: center; margin-bottom: 30px; }
-        h1 { margin-bottom: 10px; font-weight: 800; }
-        .upload-section { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 30px; text-align: center; }
-        .token-box { margin-bottom: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
-        #token-input { padding: 10px; border-radius: 8px; border: 1px solid #ddd; width: 300px; font-size: 13px; }
-        .btn-save-token { background: #333; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        .custom-file-upload { background: #4A90E2; color: white; padding: 15px 40px; border-radius: 30px; cursor: pointer; font-weight: bold; display: inline-block; transition: 0.3s; font-size: 16px; }
-        .custom-file-upload:hover { background: #357ABD; transform: scale(1.02); }
-        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
-        .card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.08); cursor: pointer; transition: 0.3s; position: relative; }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
-        .media-container { width: 100%; height: 280px; background: #eee; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-        .media-container img, .media-container video { width: 100%; height: 100%; object-fit: cover; }
-        .badge { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; padding: 4px 10px; border-radius: 15px; font-size: 11px; }
-        .info { padding: 12px; font-size: 13px; font-weight: 600; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #4A90E2; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; display: none; margin: 15px auto; }
+        :root { --primary: #4A90E2; --dark: #333; --bg: #f0f2f5; --white: #ffffff; }
+        body { font-family: 'Pretendard', -apple-system, sans-serif; background-color: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; color: var(--dark); }
+        
+        /* Sidebar */
+        .sidebar { width: 260px; background: var(--dark); color: white; display: flex; flex-direction: column; transition: 0.3s; }
+        .sidebar-header { padding: 20px; font-size: 20px; font-weight: 800; border-bottom: 1px solid #444; text-align: center; }
+        .category-list { flex: 1; overflow-y: auto; padding: 10px; }
+        .category-item { padding: 12px 15px; border-radius: 8px; cursor: pointer; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; font-size: 14px; }
+        .category-item:hover { background: #444; }
+        .category-item.active { background: var(--primary); }
+        .btn-add-cat { margin: 10px; padding: 10px; background: #555; border: 1px dashed #888; color: #ccc; border-radius: 8px; cursor: pointer; text-align: center; font-size: 13px; }
+        .btn-add-cat:hover { background: #666; color: white; }
+
+        /* Main Content */
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .top-bar { height: 60px; background: var(--white); display: flex; align-items: center; justify-content: space-between; padding: 0 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); z-index: 10; }
+        .content-area { flex: 1; overflow-y: auto; padding: 25px; }
+        
+        /* Admin Section (Hidden by default) */
+        #admin-controls { display: none; background: #eef6ff; padding: 20px; border-radius: 15px; margin-bottom: 25px; border: 1px solid #d0e3f9; }
+        .admin-row { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
+        
+        /* Grid & Cards */
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        .card { background: var(--white); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer; transition: 0.3s; position: relative; border: 1px solid #eee; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+        .media-box { width: 100%; height: 250px; background: #f9f9f9; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+        .media-box img, .media-box video { width: 100%; height: 100%; object-fit: cover; }
+        .card-info { padding: 10px; font-size: 12px; font-weight: 600; text-align: center; background: var(--white); }
+        .btn-delete { position: absolute; top: 8px; left: 8px; background: rgba(255,107,107,0.9); color: white; border: none; border-radius: 5px; padding: 4px 8px; font-size: 10px; display: none; z-index: 5; }
+        .card:hover .btn-delete { display: block; }
+
+        /* Buttons & Inputs */
+        .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.2s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-danger { background: #ff6b6b; color: white; }
+        input[type="text"], input[type="password"] { padding: 10px; border: 1px solid #ddd; border-radius: 8px; outline: none; }
+        
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
+        .modal-content { background: white; padding: 25px; border-radius: 15px; width: 350px; text-align: center; }
+
+        /* Loader */
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--primary); border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: none; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        #status-msg { margin-top: 15px; font-size: 14px; color: #4A90E2; font-weight: bold; }
+
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; }
+            .category-list { display: flex; overflow-x: auto; white-space: nowrap; }
+        }
     </style>
 </head>
 <body>
-<div class="container">
-    <header>
-        <h1>🎬 카드 템플릿 관리</h1>
-        <p>파일을 올리면 깃허브에 저장되고 네틀리파이에 즉시 반영됩니다.</p>
-        <a href="https://mampulgo.com/make-card/" style="color: #4A90E2; text-decoration: none; font-weight: bold;">🏠 카드 만들기 홈으로</a>
-    </header>
 
-    <div class="upload-section">
-        <div class="token-box">
-            <input type="password" id="token-input" placeholder="GitHub 토큰(ghp_... )을 붙여넣으세요">
-            <button class="btn-save-token" onclick="saveToken()">🔑 토큰 저장하기</button>
+    <!-- Sidebar: Category Management -->
+    <div class="sidebar">
+        <div class="sidebar-header">Mampulgo cPanel</div>
+        <div class="category-list" id="category-list">
+            <div class="category-item active" onclick="selectCategory('')">📁 전체보기</div>
+            <!-- Categories will be loaded here -->
         </div>
-        <div id="upload-controls" style="display:none;">
-            <label for="file-upload" class="custom-file-upload">📁 템플릿 파일 선택하여 업로드</label>
-            <input id="file-upload" type="file" accept="image/*,video/mp4,video/quicktime" onchange="uploadFile(this)">
-            <div id="loader" class="loader"></div>
-            <div id="status-msg"></div>
+        <div id="admin-only-sidebar" style="display:none;">
+            <div class="btn-add-cat" onclick="openModal('cat-modal')">+ 새 카테고리 추가</div>
         </div>
-        <p id="token-notice" style="color: #ff6b6b; font-weight: bold;">⚠️ 먼저 토큰을 저장해야 업로드 버튼이 나타납니다.</p>
     </div>
 
-    <div class="gallery-grid" id="gallery"></div>
-</div>
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-bar">
+            <div id="current-path" style="font-weight:bold; color:var(--primary);">전체보기</div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <a href="https://mampulgo.com/make-card/" style="font-size:13px; color:#888; text-decoration:none;">🏠 홈으로</a>
+                <div id="loader" class="loader"></div>
+            </div>
+        </div>
 
-<script>
-    const CONFIG = { username: "yongfafa0218-ops", repo: "card-gallery", wpUrl: "https://mampulgo.com/make-card/" };
+        <div class="content-area">
+            <!-- Admin Controls (Password/Upload) -->
+            <div id="admin-controls">
+                <div class="admin-row" style="margin-bottom:15px;">
+                    <input type="password" id="token-input" placeholder="GitHub Token (ghp_...)" style="width:250px;">
+                    <button class="btn btn-primary" onclick="saveToken()">🔑 토큰 저장</button>
+                    <span id="token-status" style="font-size:12px; color:green; display:none;">✅ 저장됨</span>
+                </div>
+                <div class="admin-row">
+                    <label for="file-upload" class="btn btn-primary" style="display:inline-block;">📁 현재 폴더에 업로드</label>
+                    <input id="file-upload" type="file" style="display:none;" onchange="uploadFile(this)">
+                    <button class="btn btn-danger" id="btn-del-cat" style="display:none;" onclick="deleteCurrentCategory()">🗑️ 이 카테고리 삭제</button>
+                    <div id="upload-status" style="font-size:13px; color:var(--primary); font-weight:bold;"></div>
+                </div>
+            </div>
 
-    window.onload = ( ) => {
-        const savedToken = localStorage.getItem('gh_token');
-        if (savedToken) {
-            document.getElementById('token-input').value = savedToken;
-            showUploadControls();
-        }
-        fetchGallery(); // 페이지 로드 시 갤러리 불러오기
-    };
+            <div class="gallery-grid" id="gallery-grid">
+                <!-- Media cards will be loaded here -->
+            </div>
+        </div>
+    </div>
 
-    function saveToken() {
-        const token = document.getElementById('token-input').value.trim();
-        if (token.startsWith('ghp_')) {
-            localStorage.setItem('gh_token', token);
-            alert("토큰이 저장되었습니다!");
-            showUploadControls();
-            fetchGallery(); // 토큰 저장 후 갤러리 다시 시도
-        } else {
-            alert("올바른 토큰을 입력해주세요.");
-        }
-    }
+    <!-- Modal: Add Category -->
+    <div class="modal" id="cat-modal">
+        <div class="modal-content">
+            <h3>새 카테고리 만들기</h3>
+            <input type="text" id="new-cat-name" placeholder="카테고리 이름 (영문 권장)" style="width:90%; margin-bottom:15px;">
+            <div style="display:flex; gap:10px; justify-content:center;">
+                <button class="btn btn-primary" onclick="createCategory()">생성</button>
+                <button class="btn" onclick="closeModal('cat-modal')">취소</button>
+            </div>
+        </div>
+    </div>
 
-    function showUploadControls() {
-        document.getElementById('upload-controls').style.display = 'block';
-        document.getElementById('token-notice').style.display = 'none';
-    }
+    <script>
+        const CONFIG = { username: "yongfafa0218-ops", repo: "card-gallery", wpUrl: "https://mampulgo.com/make-card/" };
+        let currentCategory = '';
+        let categories = [];
 
-    async function fetchGallery() {
-        const gallery = document.getElementById('gallery');
-        const token = localStorage.getItem('gh_token');
-        gallery.innerHTML = '<p style="text-align:center; width:100%;">불러오는 중...</p>';
-        
-        try {
-            const headers = token ? { 'Authorization': `token ${token}` } : {};
-            const response = await fetch(`https://api.github.com/repos/${CONFIG.username}/${CONFIG.repo}/contents/`, { headers } );
-            const files = await response.json();
+        window.onload = () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('admin') === 'true') {
+                document.getElementById('admin-controls').style.display = 'block';
+                document.getElementById('admin-only-sidebar').style.display = 'block';
+            }
             
-            if (!Array.isArray(files)) throw new Error(files.message || "목록 로드 실패");
-
-            gallery.innerHTML = '';
-            const validExts = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'mp4', 'mov'];
+            const savedToken = localStorage.getItem('gh_token');
+            if (savedToken) {
+                document.getElementById('token-input').value = savedToken;
+                document.getElementById('token-status').style.display = 'inline';
+            }
             
-            files.filter(f => validExts.includes(f.name.split('.').pop().toLowerCase()))
-                 .forEach(file => {
-                    const ext = file.name.split('.').pop().toLowerCase();
-                    const isVideo = ext === 'mp4' || ext === 'mov';
-                    const fileUrl = `${window.location.origin}/${file.name}`;
-                    
-                    const card = document.createElement('div');
-                    card.className = 'card';
-                    card.innerHTML = `
-                        <div class="media-container">
-                            ${isVideo ? `<video src="${fileUrl}" muted loop playsinline></video>` : `<img src="${fileUrl}">`}
-                            <span class="badge">${isVideo ? 'VIDEO' : 'IMAGE'}</span>
-                        </div>
-                        <div class="info">${file.name}</div>
-                    `;
-                    
-                    if(isVideo) {
-                        card.onmouseenter = () => card.querySelector('video').play();
-                        card.onmouseleave = () => card.querySelector('video').pause();
-                    }
-                    card.onclick = () => { window.location.href = `${CONFIG.wpUrl}?img_url=${encodeURIComponent(fileUrl)}`; };
-                    gallery.appendChild(card);
-                 });
-        } catch (e) {
-            gallery.innerHTML = `<p style="text-align:center; color:red;">갤러리 로드 실패: ${e.message}  
-토큰을 저장한 후 새로고침 해보세요.</p>`;
-        }
-    }
+            loadCategories();
+            fetchMedia();
+        };
 
-    async function uploadFile(input) {
-        const file = input.files[0];
-        const token = localStorage.getItem('gh_token');
-        const status = document.getElementById('status-msg');
-        const loader = document.getElementById('loader');
+        // --- Core Functions ---
 
-        if (!file || !token) return;
-        loader.style.display = 'block';
-        status.innerText = "업로드 중...";
-
-        try {
-            const reader = new FileReader();
-            reader.onload = async () => {
-                const content = reader.result.split(',')[1];
-                const fileName = Date.now() + "_" + file.name;
-                const response = await fetch(`https://api.github.com/repos/${CONFIG.username}/${CONFIG.repo}/contents/${fileName}`, {
-                    method: 'PUT',
-                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: `Upload ${fileName}`, content: content } )
-                });
-
-                if (response.ok) {
-                    status.innerText = "✅ 성공! 1분 뒤 반영됩니다.";
-                    input.value = "";
-                    setTimeout(fetchGallery, 3000);
-                } else {
+        async function ghFetch(path, options = {}) {
+            const token = localStorage.getItem('gh_token');
+            const headers = { 'Accept': 'application/vnd.github.v3+json', ...options.headers };
+            if (token) headers['Authorization'] = `token ${token}`;
+            
+            showLoader(true);
+            try {
+                const response = await fetch(`https://api.github.com/repos/${CONFIG.username}/${CONFIG.repo}/contents/${path}`, { ...options, headers });
+                if (!response.ok) {
                     const err = await response.json();
                     throw new Error(err.message);
                 }
-            };
-            reader.readAsDataURL(file);
-        } catch (e) {
-            alert("업로드 오류: " + e.message);
-            status.innerText = "❌ 오류 발생";
-        } finally {
-            loader.style.display = 'none';
+                return await response.json();
+            } finally {
+                showLoader(false);
+            }
         }
-    }
-</script>
+
+        async function loadCategories() {
+            try {
+                const data = await ghFetch('');
+                categories = data.filter(item => item.type === 'dir').map(item => item.name);
+                renderCategories();
+            } catch (e) { console.error("카테고리 로드 실패", e); }
+        }
+
+        function renderCategories() {
+            const list = document.getElementById('category-list');
+            list.innerHTML = `<div class="category-item ${currentCategory === '' ? 'active' : ''}" onclick="selectCategory('')">📁 전체보기</div>`;
+            categories.forEach(cat => {
+                list.innerHTML += `
+                    <div class="category-item ${currentCategory === cat ? 'active' : ''}" onclick="selectCategory('${cat}')">
+                        <span>📁 ${cat}</span>
+                    </div>
+                `;
+            });
+        }
+
+        async function selectCategory(cat) {
+            currentCategory = cat;
+            document.getElementById('current-path').innerText = cat === '' ? '전체보기' : cat;
+            document.getElementById('btn-del-cat').style.display = cat === '' ? 'none' : 'inline-block';
+            renderCategories();
+            fetchMedia();
+        }
+
+        async function fetchMedia() {
+            const grid = document.getElementById('gallery-grid');
+            grid.innerHTML = '<p>로딩 중...</p>';
+            try {
+                let allFiles = [];
+                if (currentCategory === '') {
+                    // Recursive fetch for all root files + folder files
+                    const rootData = await ghFetch('');
+                    for (const item of rootData) {
+                        if (item.type === 'file') allFiles.push(item);
+                        else if (item.type === 'dir') {
+                            const subData = await ghFetch(item.path);
+                            allFiles.push(...subData.filter(i => i.type === 'file'));
+                        }
+                    }
+                } else {
+                    const data = await ghFetch(currentCategory);
+                    allFiles = data.filter(item => item.type === 'file');
+                }
+
+                grid.innerHTML = '';
+                const validExts = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'mp4', 'mov'];
+                
+                allFiles.filter(f => validExts.includes(f.name.split('.').pop().toLowerCase()))
+                        .forEach(file => {
+                            const ext = file.name.split('.').pop().toLowerCase();
+                            const isVideo = ext === 'mp4' || ext === 'mov';
+                            const fileUrl = `${window.location.origin}/${file.path}`;
+                            
+                            const card = document.createElement('div');
+                            card.className = 'card';
+                            card.innerHTML = `
+                                <button class="btn-delete" onclick="deleteFile('${file.path}', '${file.sha}', event)">삭제</button>
+                                <div class="media-box">
+                                    ${isVideo ? `<video src="${fileUrl}" muted loop playsinline></video>` : `<img src="${fileUrl}">`}
+                                    <span class="badge">${isVideo ? 'VIDEO' : 'IMAGE'}</span>
+                                </div>
+                                <div class="card-info">${file.name}</div>
+                            `;
+                            
+                            if(isVideo) {
+                                card.onmouseenter = () => card.querySelector('video').play();
+                                card.onmouseleave = () => card.querySelector('video').pause();
+                            }
+                            card.onclick = () => { window.location.href = `${CONFIG.wpUrl}?img_url=${encodeURIComponent(fileUrl)}`; };
+                            grid.appendChild(card);
+                        });
+                if (grid.innerHTML === '') grid.innerHTML = '<p>이 폴더에 파일이 없습니다.</p>';
+            } catch (e) { grid.innerHTML = '<p>데이터를 불러올 수 없습니다. 토큰 설정을 확인하세요.</p>'; }
+        }
+
+        // --- Admin Actions ---
+
+        function saveToken() {
+            const token = document.getElementById('token-input').value.trim();
+            if (token.startsWith('ghp_')) {
+                localStorage.setItem('gh_token', token);
+                alert("토큰이 저장되었습니다!");
+                document.getElementById('token-status').style.display = 'inline';
+                loadCategories();
+                fetchMedia();
+            } else { alert("올바른 ghp_ 토큰을 입력하세요."); }
+        }
+
+        async function createCategory() {
+            const name = document.getElementById('new-cat-name').value.trim();
+            if (!name) return;
+            try {
+                // GitHub creates folders by creating a file inside
+                await ghFetch(`${name}/.keep`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ message: `Create category ${name}`, content: btoa('') })
+                });
+                alert(`'${name}' 카테고리가 생성되었습니다.`);
+                closeModal('cat-modal');
+                loadCategories();
+                selectCategory(name);
+            } catch (e) { alert("생성 실패: " + e.message); }
+        }
+
+        async function deleteCurrentCategory() {
+            if (!currentCategory) return;
+            if (!confirm(`'${currentCategory}' 카테고리와 그 안의 모든 파일을 삭제하시겠습니까?`)) return;
+            
+            try {
+                const files = await ghFetch(currentCategory);
+                for (const file of files) {
+                    await ghFetch(file.path, {
+                        method: 'DELETE',
+                        body: JSON.stringify({ message: `Delete file ${file.name} for category removal`, sha: file.sha })
+                    });
+                }
+                alert("카테고리가 삭제되었습니다.");
+                loadCategories();
+                selectCategory('');
+            } catch (e) { alert("삭제 실패: " + e.message); }
+        }
+
+        async function uploadFile(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const status = document.getElementById('upload-status');
+            status.innerText = "업로드 중...";
+            
+            try {
+                const reader = new FileReader();
+                reader.onload = async () => {
+                    const content = reader.result.split(',')[1];
+                    const fileName = Date.now() + "_" + file.name;
+                    const path = currentCategory ? `${currentCategory}/${fileName}` : fileName;
+                    
+                    await ghFetch(path, {
+                        method: 'PUT',
+                        body: JSON.stringify({ message: `Upload ${fileName}`, content: content })
+                    });
+                    status.innerText = "✅ 성공! (1분 뒤 반영)";
+                    input.value = "";
+                    setTimeout(fetchMedia, 3000);
+                };
+                reader.readAsDataURL(file);
+            } catch (e) { alert("업로드 실패: " + e.message); status.innerText = ""; }
+        }
+
+        async function deleteFile(path, sha, event) {
+            event.stopPropagation();
+            if (!confirm("이 파일을 삭제하시겠습니까?")) return;
+            try {
+                await ghFetch(path, {
+                    method: 'DELETE',
+                    body: JSON.stringify({ message: `Delete ${path}`, sha: sha })
+                });
+                fetchMedia();
+            } catch (e) { alert("삭제 실패: " + e.message); }
+        }
+
+        // --- UI Helpers ---
+        function showLoader(show) { document.getElementById('loader').style.display = show ? 'block' : 'none'; }
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    </script>
 </body>
 </html>
