@@ -3,362 +3,289 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>맘풀고 Pro 관리자 패널 v2.0</title>
+    <title>맘풀고 Pro 관리자 패널 v2.1</title>
     <style>
-        :root {
-            --primary: #4A90E2;
-            --primary-dark: #357ABD;
-            --sidebar-bg: #1e293b;
-            --sidebar-hover: #334155;
-            --bg: #f8fafc;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --white: #ffffff;
-            --danger: #ef4444;
-            --success: #10b981;
-        }
-
-        * { box-sizing: border-box; transition: all 0.2s ease-in-out; }
-        body { font-family: 'Pretendard', -apple-system, sans-serif; background-color: var(--bg); margin: 0; display: flex; height: 100vh; color: var(--text-main); }
-
-        /* Sidebar */
-        .sidebar { width: 280px; background: var(--sidebar-bg); color: white; display: flex; flex-direction: column; z-index: 100; }
-        .sidebar-header { padding: 30px 20px; font-size: 22px; font-weight: 900; letter-spacing: -1px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 10px; }
-        .sidebar-header span { color: var(--primary); }
+        :root { --primary: #4A90E2; --bg: #f8fafc; --white: #ffffff; --danger: #ef4444; --success: #10b981; }
+        body { font-family: 'Pretendard', sans-serif; background-color: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
-        .category-nav { flex: 1; padding: 20px 15px; overflow-y: auto; }
-        .nav-label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; padding-left: 10px; font-weight: bold; }
-        .cat-item { padding: 12px 15px; border-radius: 10px; cursor: pointer; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 500; }
-        .cat-item:hover { background: var(--sidebar-hover); }
-        .cat-item.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3); }
-        
-        .btn-new-cat { margin: 20px 15px; padding: 12px; background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2); color: #cbd5e1; border-radius: 10px; cursor: pointer; text-align: center; font-size: 13px; font-weight: bold; }
-        .btn-new-cat:hover { background: rgba(255,255,255,0.1); color: white; border-color: white; }
+        /* 사이드바 및 레이아웃 */
+        .sidebar { width: 260px; background: #1e293b; color: white; display: flex; flex-direction: column; }
+        .sidebar-header { padding: 25px; font-size: 20px; font-weight: 900; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .cat-nav { flex: 1; padding: 20px; overflow-y: auto; }
+        .cat-item { padding: 12px; border-radius: 8px; cursor: pointer; margin-bottom: 5px; font-size: 14px; display: flex; align-items: center; gap: 10px; }
+        .cat-item:hover { background: #334155; }
+        .cat-item.active { background: var(--primary); color: white; }
+        .btn-new-cat { margin: 15px; padding: 10px; background: rgba(255,255,255,0.05); border: 1px dashed #444; color: #ccc; border-radius: 8px; cursor: pointer; text-align: center; font-size: 13px; }
 
-        /* Main Content */
-        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
-        .header { height: 70px; background: var(--white); border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; }
-        .path-info { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 18px; }
-        .top-actions { display: flex; gap: 12px; align-items: center; }
-        .btn-admin-toggle { background: #f1f5f9; color: var(--text-main); border: 1px solid #e2e8f0; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; }
-        .btn-admin-toggle.active { background: var(--primary); color: white; border-color: var(--primary); }
+        /* 메인 영역 */
+        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .header { height: 70px; background: white; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; }
         .content { flex: 1; overflow-y: auto; padding: 30px; }
 
-        /* Admin Dashboard */
-        #admin-panel { display: none; background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 25px; margin-bottom: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        .admin-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; }
-        .admin-card { background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; }
-        .admin-card h4 { margin: 0 0 15px 0; font-size: 14px; color: var(--text-muted); }
+        /* 관리자 패널 */
+        #admin-panel { display: none; background: #eef6ff; padding: 20px; border-radius: 15px; margin-bottom: 25px; border: 1px solid #d0e3f9; }
+        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         
-        /* Gallery Grid */
-        .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 25px; }
-        .item-card { background: var(--white); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); cursor: pointer; position: relative; border: 1px solid #f1f5f9; }
-        .item-card:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-        .media-wrap { width: 100%; height: 320px; background: #f1f5f9; position: relative; overflow: hidden; }
+        /* 갤러리 카드 및 ★강력해진 버튼★ */
+        .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; }
+        .card { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer; position: relative; border: 1px solid #eee; transition: 0.3s; }
+        .card:hover { transform: translateY(-8px); box-shadow: 0 12px 20px rgba(0,0,0,0.1); }
+        .media-wrap { width: 100%; height: 300px; background: #f1f5f9; position: relative; overflow: hidden; }
         .media-wrap img, .media-wrap video { width: 100%; height: 100%; object-fit: cover; }
-        .badge { position: absolute; top: 12px; right: 12px; background: rgba(15, 23, 42, 0.7); color: white; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; backdrop-filter: blur(4px); }
-        .item-meta { padding: 15px; text-align: center; }
-        .item-name { font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         
-        /* Action Buttons on Card */
-        .action-btns { position: absolute; top: 12px; left: 12px; display: none; gap: 6px; }
-        .item-card:hover .action-btns { display: flex; }
-        .btn-icon { color: white; border: none; width: 34px; height: 34px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
-        .btn-del { background: var(--danger); }
-        .btn-move { background: var(--success); }
-
-        /* Form Elements */
-        .input-group { display: flex; gap: 8px; }
-        input, select { padding: 12px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; outline: none; font-size: 14px; width: 100%; font-family: inherit; }
-        input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1); }
-        .btn-solid { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; white-space: nowrap; }
-        .btn-outline { background: transparent; border: 1.5px solid var(--primary); color: var(--primary); padding: 12px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; }
-
-        /* Modal */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
-        .modal-box { background: white; padding: 30px; border-radius: 20px; width: 420px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
-
-        /* Loader */
-        .spinner { border: 3px solid #e2e8f0; border-top: 3px solid var(--primary); border-radius: 50%; width: 20px; height: 20px; animation: spin 0.8s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        @media (max-width: 900px) {
-            .sidebar { width: 80px; }
-            .sidebar-header span, .cat-item span, .btn-new-cat, .nav-label { display: none; }
-            .cat-item { justify-content: center; padding: 15px 0; }
-            .sidebar-header { justify-content: center; }
+        /* 관리자 모드일 때만 보이는 버튼 세트 */
+        .admin-btns { 
+            position: absolute; 
+            top: 10px; 
+            left: 10px; 
+            display: none; /* 기본은 숨김 */
+            gap: 8px; 
+            z-index: 999 !important; /* 무조건 맨 위로 */
         }
+        /* 관리자 모드 활성화 시 버튼 강제 노출 */
+        body.is-admin .admin-btns { display: flex !important; }
+        
+        .btn-action { 
+            width: 40px; 
+            height: 40px; 
+            border-radius: 10px; 
+            border: 2px solid white; 
+            color: white; 
+            font-size: 18px; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            font-weight: bold;
+        }
+        .btn-del { background: #ef4444 !important; }
+        .btn-move { background: #10b981 !important; }
+
+        /* 공통 UI */
+        .btn-solid { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-admin { background: #f1f5f9; border: 1px solid #e2e8f0; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .btn-admin.active { background: var(--primary); color: white; }
+        input, select { padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%; outline: none; }
+
+        /* 모달 */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; align-items: center; justify-content: center; }
+        .modal-box { background: white; padding: 30px; border-radius: 20px; width: 400px; text-align: center; }
     </style>
 </head>
-<body>
+<body id="main-body">
 
-    <!-- Sidebar -->
     <aside class="sidebar">
-        <div class="sidebar-header"><span>Mampulgo</span> Pro</div>
-        <nav class="category-nav">
-            <div class="nav-label">Categories</div>
+        <div class="sidebar-header">Mampulgo <b>Pro</b></div>
+        <nav class="cat-nav">
             <div id="cat-list">
-                <div class="cat-item active" onclick="changeCat('')">📂 <span>전체보기</span></div>
+                <div class="cat-item active" onclick="changeCat('')">📂 전체보기</div>
             </div>
-            <div id="admin-cat-action" style="display:none;">
-                <div class="btn-new-cat" onclick="toggleModal('modal-cat', true)">+ 카테고리 추가</div>
+            <div id="admin-cat-ui" style="display:none;">
+                <div class="btn-new-cat" onclick="openModal('modal-cat')">+ 새 카테고리 추가</div>
             </div>
         </nav>
     </aside>
 
-    <!-- Main -->
     <main class="main">
         <header class="header">
-            <div class="path-info"><span id="path-text">전체보기</span></div>
-            <div class="top-actions">
-                <a href="https://mampulgo.com/make-card/" style="text-decoration:none; color:var(--text-muted); font-size:13px; margin-right:15px;">🏠 카드 홈</a>
-                <div id="global-spinner" class="spinner" style="display:none;"></div>
-                <button id="admin-btn" class="btn-admin-toggle" onclick="toggleAdminMode()">🔒 관리자 로그인</button>
+            <div id="path-text" style="font-weight:bold; font-size:18px;">전체보기</div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <a href="https://mampulgo.com/make-card/" style="text-decoration:none; color:#888; font-size:13px;">🏠 홈</a>
+                <button id="admin-toggle" class="btn-admin" onclick="toggleAdmin( )">🔒 관리자 로그인</button>
             </div>
         </header>
 
         <div class="content">
-            <!-- Admin Dashboard -->
             <section id="admin-panel">
                 <div class="admin-grid">
-                    <div class="admin-card">
-                        <h4>GitHub 인증</h4>
-                        <div class="input-group">
+                    <div>
+                        <h4 style="margin:0 0 10px 0;">GitHub 인증</h4>
+                        <div style="display:flex; gap:5px;">
                             <input type="password" id="token-input" placeholder="ghp_... 토큰 입력">
-                            <button class="btn-solid" onclick="saveAuth()">저장</button>
+                            <button class="btn-solid" onclick="saveToken()">저장</button>
                         </div>
                     </div>
-                    <div class="admin-card">
-                        <h4>미디어 관리</h4>
-                        <div class="input-group">
-                            <label for="file-input" class="btn-outline" style="flex:1; text-align:center;">📁 파일 선택 업로드</label>
-                            <input type="file" id="file-input" style="display:none;" onchange="handleUpload(this)">
-                            <button class="btn-danger" id="del-cat-btn" style="display:none;" onclick="handleDelCat()">카테고리 삭제</button>
+                    <div>
+                        <h4 style="margin:0 0 10px 0;">파일 업로드</h4>
+                        <div style="display:flex; gap:5px;">
+                            <label for="file-up" class="btn-solid" style="flex:1; text-align:center; background:#333;">📁 파일 선택</label>
+                            <input type="file" id="file-up" style="display:none;" onchange="handleUpload(this)">
+                            <button class="btn-solid" style="background:#ef4444; display:none;" id="del-cat-btn" onclick="delCat()">폴더 삭제</button>
                         </div>
-                        <div id="upload-msg" style="margin-top:10px; font-size:12px; color:var(--primary); font-weight:bold;"></div>
+                        <div id="up-status" style="margin-top:5px; font-size:12px; color:var(--primary);"></div>
                     </div>
                 </div>
             </section>
-
-            <!-- Gallery -->
             <div class="gallery" id="gallery-grid"></div>
         </div>
     </main>
 
-    <!-- Modal: New Category -->
-    <div class="modal-overlay" id="modal-cat">
+    <!-- 모달 창들 -->
+    <div class="modal" id="modal-cat">
         <div class="modal-box">
-            <h3 style="margin-top:0;">새 카테고리 생성</h3>
-            <input type="text" id="new-cat-input" placeholder="카테고리 이름 입력" style="margin-bottom:20px;">
-            <div style="display:flex; gap:10px;">
-                <button class="btn-solid" style="flex:1;" onclick="handleCreateCat()">생성하기</button>
-                <button class="btn-outline" style="flex:1;" onclick="toggleModal('modal-cat', false)">취소</button>
+            <h3>새 카테고리 이름</h3>
+            <input type="text" id="new-cat-name" placeholder="영문 권장 (예: wedding)">
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="btn-solid" style="flex:1;" onclick="createCat()">생성</button>
+                <button class="btn-solid" style="flex:1; background:#888;" onclick="closeModal('modal-cat')">취소</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal: Move/Rename File -->
-    <div class="modal-overlay" id="modal-move">
+    <div class="modal" id="modal-move">
         <div class="modal-box">
-            <h3 style="margin-top:0;">파일 이동 및 이름 변경</h3>
+            <h3>파일 이동 및 이름 변경</h3>
             <div style="text-align:left; margin-bottom:15px;">
-                <label style="font-size:12px; color:var(--text-muted);">파일명 변경 (확장자 포함)</label>
-                <input type="text" id="move-name-input" style="margin-top:5px;">
+                <label style="font-size:12px;">파일명</label>
+                <input type="text" id="move-name">
             </div>
             <div style="text-align:left; margin-bottom:20px;">
-                <label style="font-size:12px; color:var(--text-muted);">이동할 카테고리 선택</label>
-                <select id="move-cat-select" style="margin-top:5px;">
-                    <option value="">(최상위 폴더)</option>
-                </select>
+                <label style="font-size:12px;">카테고리 선택</label>
+                <select id="move-cat-select"></select>
             </div>
             <div style="display:flex; gap:10px;">
-                <button class="btn-solid" style="flex:1;" id="btn-confirm-move">변경사항 적용</button>
-                <button class="btn-outline" style="flex:1;" onclick="toggleModal('modal-move', false)">취소</button>
+                <button class="btn-solid" style="flex:1;" id="move-confirm-btn">적용하기</button>
+                <button class="btn-solid" style="flex:1; background:#888;" onclick="closeModal('modal-move')">취소</button>
             </div>
         </div>
     </div>
 
     <script>
         const CONFIG = { user: "yongfafa0218-ops", repo: "card-gallery", wp: "https://mampulgo.com/make-card/" };
-        let isAdmin = false, currentCat = '', allData = [], categories = [];
+        let isAdmin = false, currentCat = '', allFiles = [], categories = [];
 
-        window.onload = () => {
-            if (localStorage.getItem('gh_token')) document.getElementById('token-input').value = localStorage.getItem('gh_token');
-            refreshUI();
+        window.onload = ( ) => {
+            const saved = localStorage.getItem('gh_token');
+            if(saved) document.getElementById('token-input').value = saved;
+            refresh();
         };
 
-        function toggleAdminMode() {
+        function toggleAdmin() {
             isAdmin = !isAdmin;
-            document.getElementById('admin-btn').innerText = isAdmin ? "🔓 관리자 모드 중" : "🔒 관리자 로그인";
-            document.getElementById('admin-btn').classList.toggle('active', isAdmin);
-            document.getElementById('admin-panel').style.display = isAdmin ? 'block' : 'none';
-            document.getElementById('admin-cat-action').style.display = isAdmin ? 'block' : 'none';
-            renderGallery();
+            const body = document.getElementById('main-body');
+            const btn = document.getElementById('admin-toggle');
+            if(isAdmin) {
+                body.classList.add('is-admin');
+                btn.innerText = "🔓 관리자 모드 중";
+                btn.classList.add('active');
+                document.getElementById('admin-panel').style.display = 'block';
+                document.getElementById('admin-cat-ui').style.display = 'block';
+            } else {
+                body.classList.remove('is-admin');
+                btn.innerText = "🔒 관리자 로그인";
+                btn.classList.remove('active');
+                document.getElementById('admin-panel').style.display = 'none';
+                document.getElementById('admin-cat-ui').style.display = 'none';
+            }
         }
 
-        async function refreshUI() {
-            await loadCategories();
-            await loadMedia();
-        }
-
-        async function ghApi(path, method = 'GET', body = null) {
+        async function api(path, method='GET', body=null) {
             const token = localStorage.getItem('gh_token');
             const headers = { 'Accept': 'application/vnd.github.v3+json' };
-            if (token) headers['Authorization'] = `token ${token}`;
-            document.getElementById('global-spinner').style.display = 'block';
-            try {
-                const options = { method, headers };
-                if (body) options.body = JSON.stringify(body);
-                const res = await fetch(`https://api.github.com/repos/${CONFIG.user}/${CONFIG.repo}/contents/${path}`, options);
-                if (!res.ok) { const err = await res.json(); throw new Error(err.message); }
-                return await res.json();
-            } finally { document.getElementById('global-spinner').style.display = 'none'; }
+            if(token) headers['Authorization'] = `token ${token}`;
+            const opt = { method, headers };
+            if(body) opt.body = JSON.stringify(body);
+            const res = await fetch(`https://api.github.com/repos/${CONFIG.user}/${CONFIG.repo}/contents/${path}`, opt );
+            if(!res.ok) { const e = await res.json(); throw new Error(e.message); }
+            return await res.json();
         }
 
-        async function loadCategories() {
+        async function refresh() {
             try {
-                const data = await ghApi('');
+                const data = await api('');
                 categories = data.filter(i => i.type === 'dir').map(i => i.name);
                 const list = document.getElementById('cat-list');
-                list.innerHTML = `<div class="cat-item ${currentCat === '' ? 'active' : ''}" onclick="changeCat('')">📂 <span>전체보기</span></div>`;
+                list.innerHTML = `<div class="cat-item ${currentCat===''?'active':''}" onclick="changeCat('')">📂 전체보기</div>`;
                 categories.forEach(c => {
-                    list.innerHTML += `<div class="cat-item ${currentCat === c ? 'active' : ''}" onclick="changeCat('${c}')">📁 <span>${c}</span></div>`;
+                    list.innerHTML += `<div class="cat-item ${currentCat===c?'active':''}" onclick="changeCat('${c}')">📁 ${c}</div>`;
                 });
-                // Update move modal select
-                const select = document.getElementById('move-cat-select');
-                select.innerHTML = '<option value="">(최상위 폴더)</option>';
-                categories.forEach(c => { select.innerHTML += `<option value="${c}">${c}</option>`; });
-            } catch (e) { console.error(e); }
-        }
+                const sel = document.getElementById('move-cat-select');
+                sel.innerHTML = '<option value="">(최상위)</option>';
+                categories.forEach(c => sel.innerHTML += `<option value="${c}">${c}</option>`);
 
-        async function loadMedia() {
-            const grid = document.getElementById('gallery-grid');
-            grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; padding:50px; color:#94a3b8;">로딩 중...</p>';
-            try {
-                if (currentCat === '') {
-                    const root = await ghApi('');
-                    let files = root.filter(i => i.type === 'file');
-                    for (const d of root.filter(i => i.type === 'dir')) {
-                        const sub = await ghApi(d.path);
+                if(currentCat === '') {
+                    let files = data.filter(i => i.type === 'file');
+                    for(const d of data.filter(i => i.type === 'dir')) {
+                        const sub = await api(d.path);
                         files = [...files, ...sub.filter(i => i.type === 'file')];
                     }
-                    allData = files;
+                    allFiles = files;
                 } else {
-                    const data = await ghApi(currentCat);
-                    allData = data.filter(i => i.type === 'file');
+                    const data2 = await api(currentCat);
+                    allFiles = data2.filter(i => i.type === 'file');
                 }
-                renderGallery();
-            } catch (e) { grid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; padding:50px; color:red;">에러: ${e.message}</p>`; }
+                render();
+            } catch(e) { console.error(e); }
         }
 
-        function renderGallery() {
+        function render() {
             const grid = document.getElementById('gallery-grid');
             grid.innerHTML = '';
-            const valid = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'mp4', 'mov'];
-            const filtered = allData.filter(f => valid.includes(f.name.split('.').pop().toLowerCase()));
-            if (filtered.length === 0) { grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; padding:50px; color:#94a3b8;">미디어가 없습니다.</p>'; return; }
-
+            const valid = ['jpg','jpeg','png','webp','gif','mp4','mov'];
+            const filtered = allFiles.filter(f => valid.includes(f.name.split('.').pop().toLowerCase()));
+            
             filtered.forEach(file => {
-                const isVid = ['mp4', 'mov'].includes(file.name.split('.').pop().toLowerCase());
+                const isVid = ['mp4','mov'].includes(file.name.split('.').pop().toLowerCase());
                 const card = document.createElement('div');
-                card.className = 'item-card';
+                card.className = 'card';
                 card.innerHTML = `
-                    ${isAdmin ? `<div class="action-btns">
-                        <button class="btn-icon btn-del" onclick="handleDelFile('${file.path}', '${file.sha}', event)">🗑️</button>
-                        <button class="btn-icon btn-move" onclick="openMoveModal('${file.path}', '${file.sha}', '${file.name}', event)">🚚</button>
-                    </div>` : ''}
+                    <div class="admin-btns">
+                        <button class="btn-action btn-del" onclick="delFile('${file.path}','${file.sha}',event)">🗑</button>
+                        <button class="btn-action btn-move" onclick="openMove('${file.path}','${file.sha}','${file.name}',event)">🚚</button>
+                    </div>
                     <div class="media-wrap">
                         ${isVid ? `<video src="${file.download_url}" muted loop playsinline></video>` : `<img src="${file.download_url}">`}
-                        <span class="badge">${isVid ? 'VIDEO' : 'IMAGE'}</span>
+                        <span class="badge">${isVid?'VIDEO':'IMAGE'}</span>
                     </div>
-                    <div class="item-meta"><div class="item-name">${file.name}</div></div>
+                    <div class="info">${file.name}</div>
                 `;
-                if(isVid) { card.onmouseenter = () => card.querySelector('video').play(); card.onmouseleave = () => card.querySelector('video').pause(); }
+                if(isVid) { card.onmouseenter=()=>card.querySelector('video').play(); card.onmouseleave=()=>card.querySelector('video').pause(); }
                 card.onclick = () => { window.location.href = `${CONFIG.wp}?img_url=${encodeURIComponent(window.location.origin + '/' + file.path)}`; };
                 grid.appendChild(card);
             });
         }
 
-        function changeCat(cat) {
-            currentCat = cat;
-            document.getElementById('path-text').innerText = cat === '' ? '전체보기' : cat;
-            document.getElementById('del-cat-btn').style.display = cat === '' ? 'none' : 'inline-block';
-            refreshUI();
-        }
-
-        // --- Admin Actions ---
-        function saveAuth() {
-            const val = document.getElementById('token-input').value.trim();
-            if (val.startsWith('ghp_')) { localStorage.setItem('gh_token', val); alert("저장되었습니다."); refreshUI(); }
-            else alert("올바른 토큰을 입력하세요.");
-        }
-
-        async function handleUpload(input) {
-            const file = input.files[0]; if (!file) return;
-            const msg = document.getElementById('upload-msg'); msg.innerText = "🚀 업로드 중...";
+        function changeCat(cat) { currentCat = cat; document.getElementById('path-text').innerText = cat===''?'전체보기':cat; document.getElementById('del-cat-btn').style.display = cat===''?'none':'inline-block'; refresh(); }
+        function saveToken() { const t = document.getElementById('token-input').value.trim(); if(t.startsWith('ghp_')) { localStorage.setItem('gh_token', t); alert("저장됨"); refresh(); } else alert("토큰 확인"); }
+        async function handleUpload(i) {
+            const f = i.files[0]; if(!f) return;
+            const st = document.getElementById('up-status'); st.innerText = "업로드 중...";
             try {
-                const reader = new FileReader();
-                reader.onload = async () => {
-                    const content = reader.result.split(',')[1];
-                    const path = currentCat ? `${currentCat}/${Date.now()}_${file.name}` : `${Date.now()}_${file.name}`;
-                    await ghApi(path, 'PUT', { message: `Upload ${file.name}`, content });
-                    msg.innerText = "✅ 완료!"; input.value = ""; setTimeout(loadMedia, 2000);
+                const r = new FileReader();
+                r.onload = async () => {
+                    const c = r.result.split(',')[1];
+                    const p = currentCat ? `${currentCat}/${Date.now()}_${f.name}` : `${Date.now()}_${f.name}`;
+                    await api(p, 'PUT', { message: `Upload ${f.name}`, content: c });
+                    st.innerText = "성공!"; i.value = ""; setTimeout(refresh, 2000);
                 };
-                reader.readAsDataURL(file);
-            } catch (e) { alert(e.message); msg.innerText = ""; }
+                r.readAsDataURL(f);
+            } catch(e) { alert(e.message); st.innerText = ""; }
         }
-
-        async function handleCreateCat() {
-            const name = document.getElementById('new-cat-input').value.trim(); if (!name) return;
-            try { await ghApi(`${name}/.keep`, 'PUT', { message: `Create dir ${name}`, content: btoa('') }); toggleModal('modal-cat', false); changeCat(name); }
-            catch (e) { alert(e.message); }
-        }
-
-        async function handleDelCat() {
-            if (!currentCat || !confirm(`'${currentCat}' 폴더를 삭제하시겠습니까?`)) return;
-            try {
-                const files = await ghApi(currentCat);
-                for (const f of files) await ghApi(f.path, 'DELETE', { message: `Cleanup`, sha: f.sha });
-                changeCat('');
-            } catch (e) { alert(e.message); }
-        }
-
-        async function handleDelFile(path, sha, e) { e.stopPropagation(); if (confirm("삭제하시겠습니까?")) { await ghApi(path, 'DELETE', { message: `Delete`, sha }); loadMedia(); } }
-
-        // --- Move & Rename Logic ---
-        function openMoveModal(path, sha, name, e) {
+        async function createCat() { const n = document.getElementById('new-cat-name').value.trim(); if(!n) return; try { await api(`${n}/.keep`,'PUT',{message:`Dir ${n}`,content:btoa('')}); closeModal('modal-cat'); changeCat(n); } catch(e) { alert(e.message); } }
+        async function delCat() { if(!confirm(`'${currentCat}' 삭제?`)) return; try { const fs = await api(currentCat); for(const f of fs) await api(f.path,'DELETE',{message:'Cleanup',sha:f.sha}); changeCat(''); } catch(e) { alert(e.message); } }
+        async function delFile(p,s,e) { e.stopPropagation(); if(confirm("삭제?")) { await api(p,'DELETE',{message:'Del',sha:s}); refresh(); } }
+        function openMove(p,s,n,e) {
             e.stopPropagation();
-            document.getElementById('move-name-input').value = name;
-            // Extract current folder from path
-            const parts = path.split('/');
-            const currentFileDir = parts.length > 1 ? parts[0] : "";
-            document.getElementById('move-cat-select').value = currentFileDir;
-            
-            toggleModal('modal-move', true);
-            
-            document.getElementById('btn-confirm-move').onclick = async () => {
-                const newName = document.getElementById('move-name-input').value.trim();
-                const newCat = document.getElementById('move-cat-select').value;
-                const newPath = newCat ? `${newCat}/${newName}` : newName;
-                
-                if (newPath === path) { alert("변경사항이 없습니다."); return; }
-                
+            document.getElementById('move-name').value = n;
+            const curDir = p.includes('/') ? p.split('/')[0] : "";
+            document.getElementById('move-cat-select').value = curDir;
+            openModal('modal-move');
+            document.getElementById('move-confirm-btn').onclick = async () => {
+                const newN = document.getElementById('move-name').value.trim();
+                const newC = document.getElementById('move-cat-select').value;
+                const newP = newC ? `${newC}/${newN}` : newN;
+                if(newP === p) return;
                 try {
-                    // 1. Get file content
-                    const fileData = await ghApi(path);
-                    // 2. Create new file
-                    await ghApi(newPath, 'PUT', { message: `Move/Rename to ${newPath}`, content: fileData.content });
-                    // 3. Delete old file
-                    await ghApi(path, 'DELETE', { message: `Delete old file after move`, sha: sha });
-                    
-                    alert("성공적으로 변경되었습니다!");
-                    toggleModal('modal-move', false);
-                    loadMedia();
-                } catch (err) { alert("실패: " + err.message); }
+                    const data = await api(p);
+                    await api(newP, 'PUT', { message: `Move to ${newP}`, content: data.content });
+                    await api(p, 'DELETE', { message: `Del old`, sha: s });
+                    alert("이동 완료!"); closeModal('modal-move'); refresh();
+                } catch(err) { alert(err.message); }
             };
         }
-
-        function toggleModal(id, show) { document.getElementById(id).style.display = show ? 'flex' : 'none'; }
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     </script>
 </body>
 </html>
