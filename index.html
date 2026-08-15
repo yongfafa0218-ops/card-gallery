@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>맘풀고 템플릿 갤러리 관리자 (v30.3)</title>
+    <title>맘풀고 템플릿 갤러리 (v32.0)</title>
     <style>
         :root { --primary: #4A90E2; --bg: #f8fafc; --sidebar-bg: #1e293b; --danger: #ef4444; }
         * { box-sizing: border-box; }
@@ -49,7 +49,7 @@
     <aside class="sidebar">
         <div class="sidebar-header">
             <span>📁 템플릿 폴더</span>
-            <span class="version-badge">v30.3</span>
+            <span class="version-badge">v32.0</span>
         </div>
         <div class="cat-list" id="category-list">
             <div class="cat-item active" onclick="selectCategory('')">전체보기</div>
@@ -80,7 +80,7 @@
             </div>
 
             <div class="gallery-grid" id="gallery">
-                <p style="grid-column: 1/-1; text-align: center; color: #64748b; margin-top: 50px;">갤러리를 불러오는 중입니다 (v30.3)...</p>
+                <p style="grid-column: 1/-1; text-align: center; color: #64748b; margin-top: 50px;">갤러리를 불러오는 중입니다 (v32.0)...</p>
             </div>
         </div>
     </main>
@@ -140,7 +140,7 @@
             try {
                 const headers = getAuthHeaders();
                 const res = await fetch(`https://api.github.com/repos/${CONFIG.username}/${CONFIG.repo}/contents`, { headers });
-                if (!res.ok) throw new Error(`API 오류 (${res.status}): 토큰 권한을 확인하세요.`);
+                if (!res.ok) throw new Error(`API 오류 (${res.status})`);
                 
                 const items = await res.json();
                 allFiles = [];
@@ -210,12 +210,12 @@
                 const card = document.createElement('div');
                 card.className = 'img-card';
                 
-                // 🚀 [v30.3] 인코딩 적용 및 캐시 방지 파라미터 추가
+                // 🚀 [v32.0] 정확한 Raw 경로 생성 (한글 및 특수문자 완벽 인코딩)
                 const encodedPath = file.path.split('/').map(encodeURIComponent).join('/');
                 const rawUrl = `https://raw.githubusercontent.com/${CONFIG.username}/${CONFIG.repo}/main/${encodedPath}`;
 
                 card.innerHTML = `
-                    <img src="${rawUrl}" alt="${file.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/220x260?text=Image+Load+Fail'">
+                    <img src="${rawUrl}" alt="${file.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/220x260?text=PNG+Load+Error'">
                     <div class="img-info">
                         <span class="img-name" title="${file.name}">${file.name}</span>
                         <button class="btn-del" onclick="deleteFile(event, '${file.path}', '${file.sha}')">삭제</button>
