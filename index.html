@@ -208,8 +208,9 @@
                 const card = document.createElement('div');
                 card.className = 'img-card';
                 
-                // 🚀 [v30.1] Raw URL 최적화 (PNG 포함 모든 이미지 완벽 렌더링)
-                const rawUrl = `https://raw.githubusercontent.com/${CONFIG.username}/${CONFIG.repo}/main/${file.path}`;
+                // 🚀 [v30.2] 한글 파일명 및 경로 인코딩 처리 (공백, 한글이 들어간 PNG 등 완벽 지원)
+                const encodedPath = file.path.split('/').map(encodeURIComponent).join('/');
+                const rawUrl = file.download_url || `https://raw.githubusercontent.com/${CONFIG.username}/${CONFIG.repo}/main/${encodedPath}`;
 
                 card.innerHTML = `
                     <img src="${rawUrl}" alt="${file.name}" loading="lazy">
