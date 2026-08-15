@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>맘풀고 템플릿 갤러리 (v32.0)</title>
+    <title>맘풀고 템플릿 갤러리 (v33.0)</title>
     <style>
         :root { --primary: #4A90E2; --bg: #f8fafc; --sidebar-bg: #1e293b; --danger: #ef4444; }
         * { box-sizing: border-box; }
@@ -11,7 +11,7 @@
         
         .sidebar { width: 260px; background: var(--sidebar-bg); color: white; display: flex; flex-direction: column; }
         .sidebar-header { padding: 20px; font-size: 18px; font-weight: bold; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; }
-        .version-badge { font-size: 11px; background: #3b82f6; padding: 2px 6px; border-radius: 4px; color: white; font-weight: normal; }
+        .version-badge { font-size: 11px; background: #e11d48; padding: 2px 6px; border-radius: 4px; color: white; font-weight: normal; }
         .cat-list { flex: 1; overflow-y: auto; padding: 15px; }
         .cat-item { padding: 12px 15px; border-radius: 10px; cursor: pointer; margin-bottom: 8px; transition: 0.2s; font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
         .cat-item:hover { background: rgba(255,255,255,0.08); }
@@ -49,7 +49,7 @@
     <aside class="sidebar">
         <div class="sidebar-header">
             <span>📁 템플릿 폴더</span>
-            <span class="version-badge">v32.0</span>
+            <span class="version-badge">v33.0</span>
         </div>
         <div class="cat-list" id="category-list">
             <div class="cat-item active" onclick="selectCategory('')">전체보기</div>
@@ -80,7 +80,7 @@
             </div>
 
             <div class="gallery-grid" id="gallery">
-                <p style="grid-column: 1/-1; text-align: center; color: #64748b; margin-top: 50px;">갤러리를 불러오는 중입니다 (v32.0)...</p>
+                <p style="grid-column: 1/-1; text-align: center; color: #64748b; margin-top: 50px;">갤러리를 불러오는 중입니다 (v33.0 공식 API)...</p>
             </div>
         </div>
     </main>
@@ -210,12 +210,11 @@
                 const card = document.createElement('div');
                 card.className = 'img-card';
                 
-                // 🚀 [v32.0] 정확한 Raw 경로 생성 (한글 및 특수문자 완벽 인코딩)
-                const encodedPath = file.path.split('/').map(encodeURIComponent).join('/');
-                const rawUrl = `https://raw.githubusercontent.com/${CONFIG.username}/${CONFIG.repo}/main/${encodedPath}`;
+                // 🚀 [v33.0] 깃허브 API가 제공하는 공식 download_url 사용 (가장 안전한 방식)
+                const imageUrl = file.download_url || `https://raw.githubusercontent.com/${CONFIG.username}/${CONFIG.repo}/main/${file.path}`;
 
                 card.innerHTML = `
-                    <img src="${rawUrl}" alt="${file.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/220x260?text=PNG+Load+Error'">
+                    <img src="${imageUrl}" alt="${file.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/220x260?text=Image+Error'">
                     <div class="img-info">
                         <span class="img-name" title="${file.name}">${file.name}</span>
                         <button class="btn-del" onclick="deleteFile(event, '${file.path}', '${file.sha}')">삭제</button>
@@ -223,7 +222,7 @@
                 `;
 
                 card.onclick = () => {
-                    window.location.href = `${CONFIG.wpUrl}?img_url=${encodeURIComponent(rawUrl)}`;
+                    window.location.href = `${CONFIG.wpUrl}?img_url=${encodeURIComponent(imageUrl)}`;
                 };
 
                 grid.appendChild(card);
