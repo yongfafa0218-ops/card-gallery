@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>맘풀고 템플릿 갤러리 (v34.0)</title>
+    <title>맘풀고 템플릿 갤러리 (v35.0 정답복구)</title>
     <style>
         :root { --primary: #4A90E2; --bg: #f8fafc; --sidebar-bg: #1e293b; --danger: #ef4444; }
         * { box-sizing: border-box; }
@@ -49,7 +49,7 @@
     <aside class="sidebar">
         <div class="sidebar-header">
             <span>📁 템플릿 폴더</span>
-            <span class="version-badge">v34.0</span>
+            <span class="version-badge">v35.0</span>
         </div>
         <div class="cat-list" id="category-list">
             <div class="cat-item active" onclick="selectCategory('')">전체보기</div>
@@ -80,7 +80,7 @@
             </div>
 
             <div class="gallery-grid" id="gallery">
-                <p style="grid-column: 1/-1; text-align: center; color: #64748b; margin-top: 50px;">갤러리를 불러오는 중입니다 (v34.0 로컬 경로)...</p>
+                <p style="grid-column: 1/-1; text-align: center; color: #64748b; margin-top: 50px;">갤러리를 불러오는 중입니다 (v35.0 정답 복구 모드)...</p>
             </div>
         </div>
     </main>
@@ -210,13 +210,12 @@
                 const card = document.createElement('div');
                 card.className = 'img-card';
                 
-                // 🚀 [v34.0] 네틀리파이 자체 호스팅 경로(Relative URL) 사용 + Raw 폴백
-                // 네틀리파이는 깃허브 저장소를 그대로 빌드하므로 `./파일경로`로 접근하는 것이 가장 안전합니다.
-                const localUrl = `./${file.path}`;
-                const rawUrl = `https://raw.githubusercontent.com/${CONFIG.username}/${CONFIG.repo}/main/${file.path}`;
+                // 🚀 [v35.0] 정답 코드의 로직 복구: 외부 주소가 아닌 "내 사이트의 상대 경로" 사용
+                // 네틀리파이는 저장소 파일을 그대로 호스팅하므로 origin + path 조합이 가장 완벽합니다.
+                const imageUrl = window.location.origin + '/' + file.path;
 
                 card.innerHTML = `
-                    <img src="${localUrl}" alt="${file.name}" loading="lazy" onerror="this.onerror=null; this.src='${rawUrl}';">
+                    <img src="${imageUrl}" alt="${file.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/220x260?text=Load+Error'">
                     <div class="img-info">
                         <span class="img-name" title="${file.name}">${file.name}</span>
                         <button class="btn-del" onclick="deleteFile(event, '${file.path}', '${file.sha}')">삭제</button>
@@ -224,7 +223,8 @@
                 `;
 
                 card.onclick = () => {
-                    window.location.href = `${CONFIG.wpUrl}?img_url=${encodeURIComponent(localUrl)}`;
+                    // 워드프레스로 이동할 때도 이 "완벽한 주소"를 보냅니다.
+                    window.location.href = `${CONFIG.wpUrl}?img_url=${encodeURIComponent(imageUrl)}`;
                 };
 
                 grid.appendChild(card);
