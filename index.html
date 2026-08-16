@@ -1,9 +1,14 @@
+!--
+  맘풀고 갤러리 v46.0
+  수정일: 2026-08-16
+  수정 내용: GitHub 실제 download_url 사용, media_url 전달 안정화, API 오류 처리
+-->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>맘풀고 카드 템플릿 관리자 v45.0 (초고속 안정화 버전)</title>
+    <title>맘풀고 카드 템플릿 관리자 v46.0 (실제 파일 주소 로딩 버전)</title>
     <style>
         body { font-family: 'Pretendard', -apple-system, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; color: #333; }
         .container { max-width: 1200px; margin: 0 auto; }
@@ -29,7 +34,7 @@
 <body>
 <div class="container">
     <header>
-        <h1>🎬 카드 템플릿 관리 <span class="version-tag">v44.0</span></h1>
+        <h1>🎬 카드 템플릿 관리 <span class="version-tag">v45.0</span></h1>
         <p>가장 빠르고 안정적인 갤러리 로딩 모드</p>
         <a href="https://mampulgo.com/make-card/" style="color: #4A90E2; text-decoration: none; font-weight: bold;">🏠 카드 만들기 홈으로</a>
     </header>
@@ -58,8 +63,10 @@
         gallery.innerHTML = '<p style="text-align:center; width:100%;">불러오는 중...</p>';
         try {
             // 🚀 가장 가볍고 확실한 루트 직접 조회 (튕김 현상 원천 차단)
-            const response = await fetch(`https://api.github.com/repos/${CONFIG.username}/${CONFIG.repo}/contents/`);
+const response = await fetch(`https://api.github.com/repos/${CONFIG.username}/${CONFIG.repo}/contents/`);
+            if (!response.ok) throw new Error(`GitHub API ${response.status}`);
             const files = await response.json();
+            if (!Array.isArray(files)) throw new Error('GitHub API returned an invalid file list');
             gallery.innerHTML = '';
             
             const validExts = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'mp4', 'mov'];
@@ -68,7 +75,8 @@
                  .forEach(file => {
                     const ext = file.name.split('.').pop().toLowerCase();
                     const isVideo = ext === 'mp4' || ext === 'mov';
-                    const fileUrl = new URL(`/${file.name}`, window.location.origin).href;
+                    // GitHub Pages/갤러리 루트 경로가 아니라 GitHub Contents API가 반환한 실제 파일 주소를 사용합니다.
+                    const fileUrl = file.download_url || `https://raw.githubusercontent.com/${CONFIG.username}/${CONFIG.repo}/main/${encodeURIComponent(file.name)}`;
                     
                     const card = document.createElement('div');
                     card.className = 'card';
