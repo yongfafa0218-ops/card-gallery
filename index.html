@@ -3,19 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>맘풀고 카드 템플릿 관리자 v40.0</title>
+    <title>맘풀고 카드 템플릿 관리자 v41.0</title>
     <style>
         body { font-family: 'Pretendard', -apple-system, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; color: #333; }
         .container { max-width: 1200px; margin: 0 auto; }
-        header { text-align: center; margin-bottom: 30px; position: relative; }
+        header { text-align: center; margin-bottom: 30px; }
         h1 { margin-bottom: 10px; font-weight: 800; }
         .version-tag { background: #4A90E2; color: white; padding: 2px 8px; border-radius: 5px; font-size: 12px; vertical-align: middle; margin-left: 10px; }
         .upload-section { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 30px; text-align: center; }
         .upload-btn-wrapper { margin-top: 15px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
         input[type="file"] { display: none; }
         .custom-file-upload { background: #4A90E2; color: white; padding: 12px 25px; border-radius: 30px; cursor: pointer; font-weight: bold; display: inline-block; transition: 0.3s; }
-        .custom-file-upload:hover { background: #357ABD; }
-        
         .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
         .card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.08); cursor: pointer; transition: 0.3s; position: relative; }
         .card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
@@ -31,14 +29,14 @@
 <body>
 <div class="container">
     <header>
-        <h1>🎬 카드 템플릿 관리 <span class="version-tag">v40.0</span></h1>
-        <p>파일을 올리면 깃허브에 저장되고 네틀리파이에 즉시 반영됩니다.</p>
+        <h1>🎬 카드 템플릿 관리 <span class="version-tag">v41.0</span></h1>
+        <p>이미지를 클릭하면 카드 만들기 페이지로 즉시 연결됩니다.</p>
         <a href="https://mampulgo.com/make-card/" style="color: #4A90E2; text-decoration: none; font-weight: bold;">🏠 카드 만들기 홈으로</a>
     </header>
     <div class="upload-section">
         <h3>새 템플릿 추가하기</h3>
         <div class="upload-btn-wrapper">
-            <label for="file-upload" class="custom-file-upload">📁 파일 선택 (이미지/영상)</label>
+            <label for="file-upload" class="custom-file-upload">📁 파일 선택하여 업로드</label>
             <input id="file-upload" type="file" accept="image/*,video/mp4,video/quicktime" onchange="uploadFile(this)">
             <div id="loader" class="loader"></div>
             <div id="status-msg"></div>
@@ -53,61 +51,63 @@
         wpUrl: "https://mampulgo.com/make-card/"
     };
 
-    window.onload = () => {
-        fetchGallery();
-    };
+    window.onload = () => fetchGallery();
 
     async function fetchGallery() {
         const gallery = document.getElementById('gallery');
-        gallery.innerHTML = '<p style="text-align:center; width:100%;">불러오는 중...</p>';
+        gallery.innerHTML = '<p style="text-align:center; width:100%;">이미지를 불러오는 중...</p>';
         try {
-            const response = await fetch(`https://api.github.com/repos/${CONFIG.username}/${CONFIG.repo}/contents/` );
-            const files = await response.json();
-            gallery.innerHTML = '';
+            // 🚀 모든 파일과 폴더를 가져옴
+            const response = await fetch(`https://api.github.com/repos/${CONFIG.username}/${CONFIG.repo}/contents/`);
+            const items = await response.json();
             
+            let allFiles = [];
+            // 🚀 폴더 내부까지 뒤져서 파일을 다 찾아냄 (실종 이미지 복구)
+            for (let item of items) {
+                if (item.type === 'file') {
+                    allFiles.push(item);
+                } else if (item.type === 'dir') {
+                    const subRes = await fetch(item.url);
+                    const subItems = await subRes.json();
+                    subItems.forEach(s => { if(s.type === 'file') allFiles.push(s); });
+                }
+            }
+
+            gallery.innerHTML = '';
             const validExts = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'mp4', 'mov'];
-            files.filter(f => validExts.includes(f.name.split('.').pop().toLowerCase()))
+            
+            allFiles.filter(f => validExts.includes(f.name.split('.').pop().toLowerCase()))
                  .forEach(file => {
                     const ext = file.name.split('.').pop().toLowerCase();
                     const isVideo = ext === 'mp4' || ext === 'mov';
                     
-                    // 🚀 PNG 로딩 성공 로직 유지
-                    const fileUrl = `${window.location.origin}/${file.name}`;
+                    // 🚀 중요: 파일 이름이 아니라 전체 경로(path)를 사용하여 주소 생성
+                    const fileUrl = `${window.location.origin}/${file.path.split('/').map(encodeURIComponent).join('/')}`;
                     
                     const card = document.createElement('div');
                     card.className = 'card';
                     card.innerHTML = `<div class="media-container">${isVideo ? `<video src="${fileUrl}" muted loop playsinline></video>` : `<img src="${fileUrl}">`}<span class="badge">${isVideo ? 'VIDEO' : 'IMAGE'}</span></div><div class="info">${file.name}</div>`;
-                    if(isVideo) {
-                        card.onmouseenter = () => card.querySelector('video').play();
-                        card.onmouseleave = () => card.querySelector('video').pause();
-                    }
-                    card.onclick = () => { window.location.href = `${CONFIG.wpUrl}?img_url=${encodeURIComponent(fileUrl)}`; };
+                    
+                    card.onclick = () => {
+                        const finalUrl = `${CONFIG.wpUrl}?img_url=${encodeURIComponent(fileUrl)}`;
+                        console.log("이동 주소:", finalUrl);
+                        window.location.href = finalUrl;
+                    };
                     gallery.appendChild(card);
                  });
-        } catch (e) { gallery.innerHTML = '<p>파일을 불러올 수 없습니다.</p>'; }
+        } catch (e) { gallery.innerHTML = '<p>불러오기 실패. 잠시 후 다시 시도해주세요.</p>'; }
     }
 
     async function uploadFile(input) {
         const file = input.files[0];
         if (!file) return;
-
         let token = localStorage.getItem('gh_token');
         if (!token) {
             token = prompt("GitHub 토큰을 입력하세요 (최초 1회):");
-            if (!token) {
-                alert("토큰이 없으면 업로드할 수 없습니다.");
-                input.value = "";
-                return;
-            }
+            if (!token) return;
             localStorage.setItem('gh_token', token);
         }
-
-        const status = document.getElementById('status-msg');
-        const loader = document.getElementById('loader');
-        
-        loader.style.display = 'block';
-        status.innerText = "업로드 중...";
-        
+        document.getElementById('loader').style.display = 'block';
         try {
             const reader = new FileReader();
             reader.onload = async () => {
@@ -116,24 +116,13 @@
                 const response = await fetch(`https://api.github.com/repos/${CONFIG.username}/${CONFIG.repo}/contents/${fileName}`, {
                     method: 'PUT',
                     headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: `Upload ${fileName}`, content: content } )
+                    body: JSON.stringify({ message: `Upload ${fileName}`, content: content })
                 });
-                if (response.ok) {
-                    status.innerText = "성공! 잠시 후 반영됩니다.";
-                    input.value = "";
-                    setTimeout(fetchGallery, 3000);
-                } else { 
-                    localStorage.removeItem('gh_token');
-                    throw new Error("토큰이나 권한 오류 (토큰이 초기화되었습니다. 다시 시도해주세요.)"); 
-                }
+                if (response.ok) { alert("업로드 성공!"); location.reload(); }
+                else { localStorage.removeItem('gh_token'); alert("토큰 오류!"); }
             };
             reader.readAsDataURL(file);
-        } catch (e) { 
-            alert(e.message); 
-            status.innerText = "오류 발생"; 
-        } finally { 
-            loader.style.display = 'none'; 
-        }
+        } catch (e) { alert("오류 발생"); } finally { document.getElementById('loader').style.display = 'none'; }
     }
 </script>
 </body>
