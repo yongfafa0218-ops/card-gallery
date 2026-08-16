@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>맘풀고 카드 템플릿 관리자 v41.0</title>
+    <title>맘풀고 카드 템플릿 관리자 v42.0</title>
     <style>
         body { font-family: 'Pretendard', -apple-system, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; color: #333; }
         .container { max-width: 1200px; margin: 0 auto; }
@@ -29,7 +29,7 @@
 <body>
 <div class="container">
     <header>
-        <h1>🎬 카드 템플릿 관리 <span class="version-tag">v41.0</span></h1>
+        <h1>🎬 카드 템플릿 관리 <span class="version-tag">v42.0</span></h1>
         <p>이미지를 클릭하면 카드 만들기 페이지로 즉시 연결됩니다.</p>
         <a href="https://mampulgo.com/make-card/" style="color: #4A90E2; text-decoration: none; font-weight: bold;">🏠 카드 만들기 홈으로</a>
     </header>
@@ -57,22 +57,22 @@
         const gallery = document.getElementById('gallery');
         gallery.innerHTML = '<p style="text-align:center; width:100%;">이미지를 불러오는 중...</p>';
         try {
-            // 🚀 모든 파일과 폴더를 가져옴
-            const response = await fetch(`https://api.github.com/repos/${CONFIG.username}/${CONFIG.repo}/contents/`);
-            const items = await response.json();
-            
-            let allFiles = [];
-            // 🚀 폴더 내부까지 뒤져서 파일을 다 찾아냄 (실종 이미지 복구)
-            for (let item of items) {
-                if (item.type === 'file') {
-                    allFiles.push(item);
-                } else if (item.type === 'dir') {
-                    const subRes = await fetch(item.url);
-                    const subItems = await subRes.json();
-                    subItems.forEach(s => { if(s.type === 'file') allFiles.push(s); });
+            const token = localStorage.getItem('gh_token');
+            const headers = token ? { 'Authorization': `token ${token}` } : {};
+
+            // 🚀 모든 파일과 폴더를 가져옴 (재귀적 탐색)
+            async function getFiles(path = "") {
+                const res = await fetch(`https://api.github.com/repos/${CONFIG.username}/${CONFIG.repo}/contents/${path}`, { headers });
+                const items = await res.json();
+                let files = [];
+                for (let item of items) {
+                    if (item.type === 'file') files.push(item);
+                    else if (item.type === 'dir') files = files.concat(await getFiles(item.path));
                 }
+                return files;
             }
 
+            const allFiles = await getFiles();
             gallery.innerHTML = '';
             const validExts = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'mp4', 'mov'];
             
@@ -81,7 +81,7 @@
                     const ext = file.name.split('.').pop().toLowerCase();
                     const isVideo = ext === 'mp4' || ext === 'mov';
                     
-                    // 🚀 중요: 파일 이름이 아니라 전체 경로(path)를 사용하여 주소 생성
+                    // 🚀 전체 경로(path)를 사용하여 주소 생성 (중요!)
                     const fileUrl = `${window.location.origin}/${file.path.split('/').map(encodeURIComponent).join('/')}`;
                     
                     const card = document.createElement('div');
@@ -89,9 +89,7 @@
                     card.innerHTML = `<div class="media-container">${isVideo ? `<video src="${fileUrl}" muted loop playsinline></video>` : `<img src="${fileUrl}">`}<span class="badge">${isVideo ? 'VIDEO' : 'IMAGE'}</span></div><div class="info">${file.name}</div>`;
                     
                     card.onclick = () => {
-                        const finalUrl = `${CONFIG.wpUrl}?img_url=${encodeURIComponent(fileUrl)}`;
-                        console.log("이동 주소:", finalUrl);
-                        window.location.href = finalUrl;
+                        window.location.href = `${CONFIG.wpUrl}?img_url=${encodeURIComponent(fileUrl)}`;
                     };
                     gallery.appendChild(card);
                  });
