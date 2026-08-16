@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>맘풀고 카드 템플릿 관리자 v42.0</title>
+    <title>맘풀고 카드 템플릿 관리자 v43.0</title>
     <style>
         body { font-family: 'Pretendard', -apple-system, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; color: #333; }
         .container { max-width: 1200px; margin: 0 auto; }
@@ -29,7 +29,7 @@
 <body>
 <div class="container">
     <header>
-        <h1>🎬 카드 템플릿 관리 <span class="version-tag">v42.0</span></h1>
+        <h1>🎬 카드 템플릿 관리 <span class="version-tag">v43.0</span></h1>
         <p>이미지를 클릭하면 카드 만들기 페이지로 즉시 연결됩니다.</p>
         <a href="https://mampulgo.com/make-card/" style="color: #4A90E2; text-decoration: none; font-weight: bold;">🏠 카드 만들기 홈으로</a>
     </header>
@@ -60,7 +60,6 @@
             const token = localStorage.getItem('gh_token');
             const headers = token ? { 'Authorization': `token ${token}` } : {};
 
-            // 🚀 모든 파일과 폴더를 가져옴 (재귀적 탐색)
             async function getFiles(path = "") {
                 const res = await fetch(`https://api.github.com/repos/${CONFIG.username}/${CONFIG.repo}/contents/${path}`, { headers });
                 const items = await res.json();
@@ -81,8 +80,8 @@
                     const ext = file.name.split('.').pop().toLowerCase();
                     const isVideo = ext === 'mp4' || ext === 'mov';
                     
-                    // 🚀 전체 경로(path)를 사용하여 주소 생성 (중요!)
-                    const fileUrl = `${window.location.origin}/${file.path.split('/').map(encodeURIComponent).join('/')}`;
+                    // 🚀 PNG 및 한글 파일 완벽 호환 URL 생성
+                    const fileUrl = `${window.location.origin}/${file.name}`;
                     
                     const card = document.createElement('div');
                     card.className = 'card';
