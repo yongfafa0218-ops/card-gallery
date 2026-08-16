@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>맘풀고 카드 템플릿 관리자 v44.0 (초고속 안정화 버전)</title>
+    <title>맘풀고 카드 템플릿 관리자 v45.0 (초고속 안정화 버전)</title>
     <style>
         body { font-family: 'Pretendard', -apple-system, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; color: #333; }
         .container { max-width: 1200px; margin: 0 auto; }
@@ -68,7 +68,7 @@
                  .forEach(file => {
                     const ext = file.name.split('.').pop().toLowerCase();
                     const isVideo = ext === 'mp4' || ext === 'mov';
-                    const fileUrl = `${window.location.origin}/${file.name}`;
+                    const fileUrl = new URL(`/${file.name}`, window.location.origin).href;
                     
                     const card = document.createElement('div');
                     card.className = 'card';
@@ -79,8 +79,11 @@
                         card.onmouseleave = () => card.querySelector('video').pause();
                     }
 
-                    card.onclick = () => {
-                        window.location.href = `${CONFIG.wpUrl}?img_url=${encodeURIComponent(fileUrl)}`;
+card.onclick = () => {
+                        // URLSearchParams가 한 번만 인코딩하므로 특수문자·한글 파일명도 안전하게 전달합니다.
+                        const targetUrl = new URL(CONFIG.wpUrl);
+                        targetUrl.searchParams.set('media_url', fileUrl);
+                        window.location.assign(targetUrl.href);
                     };
                     gallery.appendChild(card);
                  });
