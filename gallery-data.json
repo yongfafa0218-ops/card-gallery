@@ -1,11 +1,23 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-21T00:00:00+09:00",
+  "updatedAt": "2026-08-21T12:50:14.111Z",
   "categories": [
-    { "id": "basic", "name": "기본" },
-    { "id": "character", "name": "인물·캐릭터" },
-    { "id": "season", "name": "계절" },
-    { "id": "sky", "name": "하늘" }
+    {
+      "id": "basic",
+      "name": "기본"
+    },
+    {
+      "id": "character",
+      "name": "인물·캐릭터"
+    },
+    {
+      "id": "season",
+      "name": "계절"
+    },
+    {
+      "id": "sky",
+      "name": "하늘"
+    }
   ],
   "cards": [
     {
@@ -13,13 +25,6 @@
       "path": "1786465921944_gemini-3.1-flash-lite-image (nano-banana-2-lite)_a_Masterpiece,_best_qu.jpeg",
       "name": "여름 바다",
       "category": "season",
-      "type": "image"
-    },
-    {
-      "id": "1786810623611-12",
-      "path": "1786810623611_12.png",
-      "name": "함께 걷는 두 사람",
-      "category": "character",
       "type": "image"
     },
     {
