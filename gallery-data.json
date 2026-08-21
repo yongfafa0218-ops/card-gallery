@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-21T13:13:01.598Z",
+  "updatedAt": "2026-08-21T13:13:14.919Z",
   "categories": [
     {
       "id": "basic",
@@ -24,6 +24,13 @@
     }
   ],
   "cards": [
+    {
+      "id": "card-1787317994608",
+      "path": "media/1787317992715_card-file.webp",
+      "name": "농촌",
+      "category": "basic",
+      "type": "image"
+    },
     {
       "id": "card-1787317981259",
       "path": "media/1787317978634_card-file.png",
