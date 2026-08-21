@@ -1,7 +1,7 @@
 <!--
   맘풀고 공개 카드 갤러리 v48.0
   - 공개 화면에서는 카드 보기·선택만 제공합니다.
-  - 카드 등록·분류·삭제는 admin.html에서만 처리합니다.
+  - 공개 화면에서는 카드 보기·선택만 제공합니다.
   - 카드 메이커에는 기존과 동일하게 media_url을 전달합니다.
 -->
 <!doctype html>
@@ -21,7 +21,6 @@
     .brand h1 { margin:0; font-size:clamp(25px, 4vw, 34px); letter-spacing:-.05em; }
     .brand p { margin:8px 0 0; color:var(--muted); font-size:15px; }
     .home-link { display:inline-flex; align-items:center; justify-content:center; border-radius:12px; padding:11px 15px; color:var(--blue); background:#edf5ff; font-size:14px; font-weight:750; text-decoration:none; white-space:nowrap; }
-    .admin-link { background:#fff; border:1px solid #d7e3f2; color:#60748f; }
     .toolbar { background:var(--white); border:1px solid var(--line); border-radius:18px; padding:17px; box-shadow:0 8px 28px rgba(30, 51, 84, .05); margin-bottom:26px; }
     .toolbar-label { display:block; margin-bottom:11px; color:#344054; font-size:14px; font-weight:800; }
     .filters { display:flex; flex-wrap:wrap; gap:8px; }
@@ -39,8 +38,6 @@
     .name { display:block; overflow:hidden; color:#27364a; font-size:14px; font-weight:750; line-height:1.35; text-overflow:ellipsis; white-space:nowrap; }
     .state { grid-column:1/-1; margin:32px 0; color:var(--muted); font-size:15px; text-align:center; }
     .state.error { color:#d92d20; }
-    footer { margin-top:36px; color:#98a2b3; font-size:12px; text-align:center; }
-    footer a { color:#7d8ea8; text-decoration:none; }
     @media (max-width:640px) { .container { padding:23px 16px 44px; } header { align-items:flex-start; flex-direction:column; } .header-actions { width:100%; } .home-link { width:100%; } .gallery-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; } .media-container { height:220px; } .card-body { padding:11px; } }
   </style>
 </head>
@@ -52,7 +49,6 @@
         <p>마음을 담을 배경을 고르고 나만의 카드를 만들어 보세요.</p>
       </div>
       <div class="header-actions">
-        <a class="home-link admin-link" href="./admin.html">카드 관리</a>
         <a class="home-link" href="https://mampulgo.com/make-card/">카드 만들기로 돌아가기</a>
       </div>
     </header>
@@ -66,9 +62,6 @@
       <p class="state">카드를 불러오는 중입니다.</p>
     </section>
 
-    <footer>
-      카드 관리가 필요하신가요? <a href="./admin.html">카드 관리 페이지</a>
-    </footer>
   </main>
 
   <script>
