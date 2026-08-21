@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-21T12:51:10.987Z",
+  "updatedAt": "2026-08-21T12:51:47.696Z",
   "categories": [
     {
       "id": "basic",
@@ -24,6 +24,13 @@
     }
   ],
   "cards": [
+    {
+      "id": "card-1787316707382",
+      "path": "media/1787316704273_card-file.png",
+      "name": "화단이미지",
+      "category": "basic",
+      "type": "image"
+    },
     {
       "id": "1786465921944_gemini-3.1-flash-lite-image-nano-banana-2-lite",
       "path": "1786465921944_gemini-3.1-flash-lite-image (nano-banana-2-lite)_a_Masterpiece,_best_qu.jpeg",
