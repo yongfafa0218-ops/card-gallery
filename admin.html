@@ -1,5 +1,5 @@
 <!--
-  맘풀고 카드 관리 페이지 v1.0
+  맘풀고 카드 관리 페이지 v1.1
   - 별도 로그인 없이 이 페이지에서만 GitHub 토큰을 최초 1회 입력합니다.
   - 토큰은 이 브라우저의 localStorage에만 저장되며 공개 갤러리에는 사용되지 않습니다.
   - 파일 업로드, 카테고리 이동, 삭제는 GitHub card-gallery 저장소에 직접 반영됩니다.
@@ -11,7 +11,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <meta name="theme-color" content="#243b63">
-  <title>맘풀고 카드 관리</title>
+  <title>맘풀고 카드 관리 v1.1</title>
   <style>
     :root { --navy:#243b63; --blue:#4a90e2; --blue-dark:#2e74c8; --green:#027a48; --red:#d92d20; --ink:#1e293b; --muted:#667085; --line:#e3e8ef; --bg:#f5f7fb; --white:#fff; }
     * { box-sizing:border-box; }
@@ -50,7 +50,10 @@
     .status { min-height:20px; margin:14px 2px 0; color:#475467; font-size:13px; font-weight:700; }
     .status.ok { color:var(--green); }.status.error { color:var(--red); }.status.work { color:var(--blue-dark); }
     .category-row { display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
-    .category-chip { border:1px solid #dbe4ef; border-radius:999px; padding:7px 11px; background:#fff; color:#526176; font-size:13px; font-weight:750; }
+    .category-chip { display:inline-flex; align-items:center; gap:7px; border:1px solid #dbe4ef; border-radius:999px; padding:5px 6px 5px 11px; background:#fff; color:#526176; font-size:13px; font-weight:750; }
+    .category-count { display:inline-flex; align-items:center; justify-content:center; min-width:19px; height:19px; border-radius:999px; padding:0 5px; background:#eef4fb; color:#51749a; font-size:11px; font-weight:850; }
+    .category-delete { display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border:0; border-radius:999px; background:#fff3f2; color:#d24e44; cursor:pointer; font-size:16px; font-weight:850; line-height:1; }
+    .category-delete:hover { background:#fee4e2; }
     .empty { margin:32px 0; color:var(--muted); text-align:center; }
     .manager-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:17px; }
     .card { overflow:hidden; border:1px solid var(--line); border-radius:15px; background:#fff; box-shadow:0 4px 14px rgba(38,58,88,.055); }
@@ -79,7 +82,7 @@
   <main class="container">
     <header>
       <div>
-        <h1>맘풀고 카드 관리</h1>
+        <h1>맘풀고 카드 관리 v1.1</h1>
         <p class="subtitle">여기서 이미지를 올리고, 카테고리를 옮기고, 필요 없는 카드를 삭제합니다.</p>
       </div>
       <nav class="top-links" aria-label="페이지 이동">
@@ -112,7 +115,7 @@
 
     <section class="panel">
       <div class="panel-head">
-        <div><h2>카테고리</h2><p>새 카테고리를 추가하면 바로 카드 이동 목록에 나타납니다.</p></div>
+        <div><h2>카테고리</h2><p>새 카테고리를 추가하거나, 필요 없는 카테고리를 삭제할 수 있습니다.</p></div>
         <button class="button ghost" id="add-category" type="button">카테고리 추가</button>
       </div>
       <div class="category-row" id="category-list"></div>
@@ -142,6 +145,15 @@
       <p>예: 인물·캐릭터, 계절, 하늘, 에니어그램</p>
       <input id="category-input" type="text" maxlength="24" placeholder="카테고리 이름" required>
       <div class="dialog-actions"><button class="button ghost" value="cancel" type="button" id="category-cancel">취소</button><button class="button primary" value="default" type="submit">추가하기</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="delete-category-dialog">
+    <form class="dialog-content" method="dialog" id="delete-category-form">
+      <h3>카테고리 삭제</h3>
+      <p id="delete-category-description"></p>
+      <div class="field"><label for="delete-category-target">카드를 옮길 카테고리</label><select id="delete-category-target"></select></div>
+      <div class="dialog-actions"><button class="button ghost" value="cancel" type="button" id="delete-category-cancel">취소</button><button class="button danger" value="default" type="submit">카테고리 삭제</button></div>
     </form>
   </dialog>
 
@@ -225,7 +237,15 @@
     function categoryOptions(selected) { return data.categories.map(category => `<option value="${escapeHtml(category.id)}" ${category.id === selected ? 'selected' : ''}>${escapeHtml(category.name)}</option>`).join(''); }
     function renderAll() {
       $('#upload-category').innerHTML = categoryOptions(data.categories[0]?.id);
-      $('#category-list').innerHTML = data.categories.map(category => `<span class="category-chip">${escapeHtml(category.name)}</span>`).join('');
+      const categoryCounts = Object.fromEntries(data.categories.map(category => [category.id, data.cards.filter(card => card.category === category.id).length]));
+      $('#category-list').innerHTML = data.categories.map(category => `
+        <span class="category-chip">
+          <span>${escapeHtml(category.name)}</span>
+          <span class="category-count">${categoryCounts[category.id]}</span>
+          <button class="category-delete" type="button" data-delete-category="${escapeHtml(category.id)}" aria-label="${escapeHtml(category.name)} 카테고리 삭제" title="카테고리 삭제">×</button>
+        </span>
+      `).join('');
+      $('#category-list').querySelectorAll('[data-delete-category]').forEach(button => button.addEventListener('click', () => requestDeleteCategory(button.dataset.deleteCategory)));
       const grid = $('#manager-grid');
       if (!data.cards.length) { grid.innerHTML = '<p class="empty">등록된 카드가 없습니다.</p>'; return; }
       grid.innerHTML = data.cards.map(card => `
@@ -316,6 +336,19 @@
       $('#category-input').focus();
     }
 
+    function requestDeleteCategory(id) {
+      const category = data.categories.find(item => item.id === id);
+      if (!category) return;
+      if (data.categories.length < 2) { setStatus('마지막 남은 카테고리는 삭제할 수 없습니다.', 'error'); return; }
+      const count = data.cards.filter(card => card.category === id).length;
+      const targetOptions = data.categories.filter(item => item.id !== id).map(item => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}</option>`).join('');
+      $('#delete-category-description').textContent = count ? `'${category.name}'에 있는 카드 ${count}개를 다른 카테고리로 옮긴 뒤 삭제합니다.` : `'${category.name}' 카테고리를 삭제합니다.`;
+      $('#delete-category-target').innerHTML = targetOptions;
+      const dialog = $('#delete-category-dialog');
+      dialog.dataset.categoryId = id;
+      dialog.showModal();
+    }
+
     $('#upload-form').addEventListener('submit', uploadCard);
     $('#file-upload').addEventListener('change', event => { const file = event.target.files[0]; $('#file-name').textContent = file ? `${file.name} (${Math.ceil(file.size / 1024)}KB)` : '선택된 파일 없음'; if (file && !$('#card-name').value.trim()) $('#card-name').value = file.name.replace(/\.[^.]+$/,''); });
     $('#refresh').addEventListener('click', () => { setStatus(''); loadData(); });
@@ -324,6 +357,7 @@
     $('#token-cancel').addEventListener('click', () => { $('#token-dialog').close(); if (pendingAction) { pendingAction(); pendingAction = null; } });
     $('#token-form').addEventListener('submit', event => { event.preventDefault(); const token = $('#token-input').value.trim(); if (!token) return; localStorage.setItem(TOKEN_KEY, token); $('#token-dialog').close(); if (pendingAction) { pendingAction(); pendingAction = null; } });
     $('#category-cancel').addEventListener('click', () => $('#category-dialog').close());
+    $('#delete-category-cancel').addEventListener('click', () => $('#delete-category-dialog').close());
     $('#category-form').addEventListener('submit', async event => {
       event.preventDefault();
       const name = $('#category-input').value.trim();
@@ -339,6 +373,26 @@
         $('#category-dialog').close();
         renderAll();
         setStatus(`'${name}' 카테고리를 추가했습니다.`, 'ok');
+      } catch (error) { setStatus(error.message, 'error'); await loadData(); }
+    });
+    $('#delete-category-form').addEventListener('submit', async event => {
+      event.preventDefault();
+      const dialog = $('#delete-category-dialog');
+      const categoryId = dialog.dataset.categoryId;
+      const targetId = $('#delete-category-target').value;
+      const category = data.categories.find(item => item.id === categoryId);
+      const target = data.categories.find(item => item.id === targetId);
+      if (!category || !target || categoryId === targetId) { setStatus('카테고리 삭제 정보를 다시 확인하세요.', 'error'); return; }
+      const movedCount = data.cards.filter(card => card.category === categoryId).length;
+      const token = await requireToken(); if (!token) return;
+      try {
+        setStatus('카드를 옮기고 카테고리를 삭제하는 중입니다...', 'work');
+        data.cards.forEach(card => { if (card.category === categoryId) card.category = targetId; });
+        data.categories = data.categories.filter(item => item.id !== categoryId);
+        await saveData(`Delete ${category.name} category and move cards to ${target.name}`);
+        dialog.close();
+        renderAll();
+        setStatus(movedCount ? `'${category.name}'을 삭제하고 카드 ${movedCount}개를 '${target.name}'으로 옮겼습니다.` : `'${category.name}' 카테고리를 삭제했습니다.`, 'ok');
       } catch (error) { setStatus(error.message, 'error'); await loadData(); }
     });
 
