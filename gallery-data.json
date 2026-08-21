@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-21T12:50:26.139Z",
+  "updatedAt": "2026-08-21T12:51:10.987Z",
   "categories": [
     {
       "id": "basic",
@@ -17,6 +17,10 @@
     {
       "id": "sky",
       "name": "하늘"
+    },
+    {
+      "id": "category-70635",
+      "name": "펜시"
     }
   ],
   "cards": [
