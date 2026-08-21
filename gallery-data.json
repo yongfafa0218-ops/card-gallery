@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "updatedAt": "2026-08-21T00:00:00+09:00",
+  "categories": [
+    { "id": "basic", "name": "기본" },
+    { "id": "character", "name": "인물·캐릭터" },
+    { "id": "season", "name": "계절" },
+    { "id": "sky", "name": "하늘" }
+  ],
+  "cards": [
+    {
+      "id": "1786465921944_gemini-3.1-flash-lite-image-nano-banana-2-lite",
+      "path": "1786465921944_gemini-3.1-flash-lite-image (nano-banana-2-lite)_a_Masterpiece,_best_qu.jpeg",
+      "name": "여름 바다",
+      "category": "season",
+      "type": "image"
+    },
+    {
+      "id": "1786810623611-12",
+      "path": "1786810623611_12.png",
+      "name": "함께 걷는 두 사람",
+      "category": "character",
+      "type": "image"
+    },
+    {
+      "id": "1786811050488-enneagram-8",
+      "path": "1786811050488_mampulgo.com-에니어그램-유형8-도전돌파형.png",
+      "name": "에니어그램 8번 도전돌파형",
+      "category": "basic",
+      "type": "image"
+    },
+    {
+      "id": "1786871763200-c3",
+      "path": "1786871763200_c3.png",
+      "name": "친구와 함께",
+      "category": "character",
+      "type": "image"
+    },
+    {
+      "id": "sunset-sky",
+      "path": "노을하늘.jpeg",
+      "name": "노을 하늘",
+      "category": "sky",
+      "type": "image"
+    },
+    {
+      "id": "rainbow-sky",
+      "path": "무지개하늘.jpeg",
+      "name": "무지개 하늘",
+      "category": "sky",
+      "type": "image"
+    },
+    {
+      "id": "summer-sea",
+      "path": "Season/여름바다.jpeg",
+      "name": "여름 바다",
+      "category": "season",
+      "type": "image"
+    },
+    {
+      "id": "dawn-sky",
+      "path": "sky/새벽하늘.jpeg",
+      "name": "새벽 하늘",
+      "category": "sky",
+      "type": "image"
+    }
+  ]
+}
