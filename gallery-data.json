@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-21T12:53:59.178Z",
+  "updatedAt": "2026-08-21T13:13:01.598Z",
   "categories": [
     {
       "id": "basic",
@@ -24,6 +24,13 @@
     }
   ],
   "cards": [
+    {
+      "id": "card-1787317981259",
+      "path": "media/1787317978634_card-file.png",
+      "name": "위로",
+      "category": "basic",
+      "type": "image"
+    },
     {
       "id": "card-1787316838814",
       "path": "media/1787316834490_blue_cumulus_sky_card.png",
