@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-21T12:50:14.111Z",
+  "updatedAt": "2026-08-21T12:50:20.145Z",
   "categories": [
     {
       "id": "basic",
@@ -25,13 +25,6 @@
       "path": "1786465921944_gemini-3.1-flash-lite-image (nano-banana-2-lite)_a_Masterpiece,_best_qu.jpeg",
       "name": "여름 바다",
       "category": "season",
-      "type": "image"
-    },
-    {
-      "id": "1786811050488-enneagram-8",
-      "path": "1786811050488_mampulgo.com-에니어그램-유형8-도전돌파형.png",
-      "name": "에니어그램 8번 도전돌파형",
-      "category": "basic",
       "type": "image"
     },
     {
