@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-21T12:51:47.696Z",
+  "updatedAt": "2026-08-21T12:53:59.178Z",
   "categories": [
     {
       "id": "basic",
@@ -24,6 +24,13 @@
     }
   ],
   "cards": [
+    {
+      "id": "card-1787316838814",
+      "path": "media/1787316834490_blue_cumulus_sky_card.png",
+      "name": "blue_cumulus_sky_card",
+      "category": "basic",
+      "type": "image"
+    },
     {
       "id": "card-1787316707382",
       "path": "media/1787316704273_card-file.png",
