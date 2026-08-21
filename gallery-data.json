@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-21T12:50:20.145Z",
+  "updatedAt": "2026-08-21T12:50:26.139Z",
   "categories": [
     {
       "id": "basic",
@@ -25,13 +25,6 @@
       "path": "1786465921944_gemini-3.1-flash-lite-image (nano-banana-2-lite)_a_Masterpiece,_best_qu.jpeg",
       "name": "여름 바다",
       "category": "season",
-      "type": "image"
-    },
-    {
-      "id": "1786871763200-c3",
-      "path": "1786871763200_c3.png",
-      "name": "친구와 함께",
-      "category": "character",
       "type": "image"
     },
     {
