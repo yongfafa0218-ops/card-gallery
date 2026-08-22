@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-22T12:46:12.787Z",
+  "updatedAt": "2026-08-22T12:46:28.429Z",
   "categories": [
     {
       "id": "basic",
@@ -20,6 +20,13 @@
     }
   ],
   "cards": [
+    {
+      "id": "card-1787402788127",
+      "path": "media/1787402785474_card-file.png",
+      "name": "튤립",
+      "category": "season",
+      "type": "image"
+    },
     {
       "id": "card-1787402772478",
       "path": "media/1787402769832_card-file.png",
