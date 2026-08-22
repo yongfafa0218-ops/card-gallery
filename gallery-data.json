@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-22T12:59:32.881Z",
+  "updatedAt": "2026-08-22T12:59:49.732Z",
   "categories": [
     {
       "id": "basic",
@@ -20,6 +20,13 @@
     }
   ],
   "cards": [
+    {
+      "id": "card-1787403589423",
+      "path": "media/1787403586730_card-file.png",
+      "name": "다리위",
+      "category": "character",
+      "type": "image"
+    },
     {
       "id": "card-1787403520000",
       "path": "media/1787403517195_card-file.png",
