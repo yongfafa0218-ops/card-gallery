@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-21T13:27:57.591Z",
+  "updatedAt": "2026-08-22T12:45:53.972Z",
   "categories": [
     {
       "id": "basic",
@@ -20,6 +20,13 @@
     }
   ],
   "cards": [
+    {
+      "id": "card-1787402753438",
+      "path": "media/1787402750525_2.png",
+      "name": "꽃밭2",
+      "category": "season",
+      "type": "image"
+    },
     {
       "id": "card-1787317994608",
       "path": "media/1787317992715_card-file.webp",
