@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-22T12:57:00.904Z",
+  "updatedAt": "2026-08-22T12:58:40.311Z",
   "categories": [
     {
       "id": "basic",
@@ -20,6 +20,13 @@
     }
   ],
   "cards": [
+    {
+      "id": "card-1787403520000",
+      "path": "media/1787403517195_card-file.png",
+      "name": "산위",
+      "category": "character",
+      "type": "image"
+    },
     {
       "id": "card-1787403420592",
       "path": "media/1787403416852_card-file.png",
