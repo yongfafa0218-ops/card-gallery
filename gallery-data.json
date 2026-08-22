@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-22T12:46:52.936Z",
+  "updatedAt": "2026-08-22T12:47:05.962Z",
   "categories": [
     {
       "id": "basic",
@@ -20,6 +20,13 @@
     }
   ],
   "cards": [
+    {
+      "id": "card-1787402825660",
+      "path": "media/1787402823065_card-file.png",
+      "name": "물텅범",
+      "category": "character",
+      "type": "image"
+    },
     {
       "id": "card-1787402812640",
       "path": "media/1787402809778_card-file.png",
