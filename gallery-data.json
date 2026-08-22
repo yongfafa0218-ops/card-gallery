@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-22T13:12:59.036Z",
+  "updatedAt": "2026-08-22T13:13:35.242Z",
   "categories": [
     {
       "id": "basic",
@@ -21,8 +21,8 @@
   ],
   "cards": [
     {
-      "id": "card-1787404378719",
-      "path": "media/1787404376032_card-file.png",
+      "id": "card-1787404414928",
+      "path": "media/1787404412277_card-file.png",
       "name": "단풍",
       "category": "character",
       "type": "image"
