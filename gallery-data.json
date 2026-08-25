@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-25T13:15:15.255Z",
+  "updatedAt": "2026-08-25T21:49:51.405Z",
   "categories": [
     {
       "id": "basic",
@@ -20,13 +20,6 @@
     }
   ],
   "cards": [
-    {
-      "id": "card-1787663714733",
-      "path": "media/1787663709909_minimax-h3_a_-_-_-_-_.mp4",
-      "name": "minimax-h3_a_비가_내리고_물을_첨벙거리는등_자연스",
-      "category": "basic",
-      "type": "video"
-    },
     {
       "id": "card-1787404414928",
       "path": "media/1787404412277_card-file.png",
