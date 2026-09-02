@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-25T21:51:30.685Z",
+  "updatedAt": "2026-09-02T22:20:05.809Z",
   "categories": [
     {
       "id": "basic",
@@ -20,6 +20,13 @@
     }
   ],
   "cards": [
+    {
+      "id": "card-1788387605298",
+      "path": "media/1788387602646_card-file.png",
+      "name": "다윗의 회개",
+      "category": "character",
+      "type": "image"
+    },
     {
       "id": "card-1787694690358",
       "path": "media/1787694684722_minimax-h3_a_-_-_-_-_-1.gif",
