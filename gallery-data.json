@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-02T22:20:05.809Z",
+  "updatedAt": "2026-09-23T15:02:00.326Z",
   "categories": [
     {
       "id": "basic",
@@ -25,13 +25,6 @@
       "path": "media/1788387602646_card-file.png",
       "name": "다윗의 회개",
       "category": "character",
-      "type": "image"
-    },
-    {
-      "id": "card-1787694690358",
-      "path": "media/1787694684722_minimax-h3_a_-_-_-_-_-1.gif",
-      "name": "minimax-h3_a_비가_내리고_물을_첨벙거리는등_자연스",
-      "category": "basic",
       "type": "image"
     },
     {
