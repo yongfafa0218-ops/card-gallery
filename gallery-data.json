@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-23T15:02:00.326Z",
+  "updatedAt": "2026-09-23T15:02:21.517Z",
   "categories": [
     {
       "id": "basic",
@@ -20,6 +20,13 @@
     }
   ],
   "cards": [
+    {
+      "id": "card-1790175741210",
+      "path": "media/1790175738137_1.png",
+      "name": "가을1",
+      "category": "basic",
+      "type": "image"
+    },
     {
       "id": "card-1788387605298",
       "path": "media/1788387602646_card-file.png",
